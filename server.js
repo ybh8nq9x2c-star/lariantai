@@ -16,13 +16,12 @@ app.post('/api/analyze', async (req, res) => {
     if (!base64) return res.status(400).json({ error: 'Nessuna immagine' });
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",           // ← NUOVO (funziona subito)
       generationConfig: { 
         responseMimeType: "application/json",
         temperature: 0.1 
       }
     });
-
     const prompt = `Sei un fashion expert italiano. Analizza l'outfit nella foto e identifica OGNI capo separatamente.
 
 Rispondi **SOLO** con un array JSON valido in questo formato esatto:
