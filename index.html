@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#f8f9fc" />
+  <title>LariantAi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.30);
+      --glass-border: rgba(255, 255, 255, 0.85);
+      --text-primary: #111827;
+      --text-secondary: #4b5563;
+      --accent: #111827;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f8f9fc;
+      background-image: 
+        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(220, 232, 255, 0.65) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 70% at 85% 85%, rgba(232, 220, 255, 0.55) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(220, 255, 232, 0.35) 0%, transparent 70%);
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--text-primary);
+    }
+
+    .container { width: 100%; max-width: 380px; }
+
+    /* ====================== LIQUID GLASS BASE ====================== */
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.08), inset 0 4px 20px rgba(255,255,255,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .glass::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(160deg, rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.25) 30%, transparent 60%);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .glass::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: 
+        inset 0 1px 0 rgba(255,255,255,0.95),
+        inset 0 -1px 0 rgba(255,255,255,0.25),
+        inset 1px 0 0 rgba(255,255,255,0.65),
+        inset -1px 0 0 rgba(255,255,255,0.35);
+      pointer-events: none;
+      z-index: 2;
+    }
+    .glass > * { position: relative; z-index: 3; }
+
+    /* ====================== HEADER ====================== */
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .logo {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.8px;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #666666;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* ====================== UPLOAD AREA ====================== */
+    .upload-area {
+      padding: 52px 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .upload-area:active { transform: scale(0.97); }
+    .upload-icon {
+      width: 72px; height: 72px;
+      margin: 0 auto 20px;
+      background: rgba(255,255,255,0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .upload-title {
+      font-size: 17px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .upload-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ====================== PREVIEW ====================== */
+    .preview-container {
+      display: none;
+      border-radius: 24px;
+      overflow: hidden;
+      margin-bottom: 32px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+    .preview-container img { width: 100%; display: block; }
+    .change-photo {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.95);
+      color: #111;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 22px;
+      border-radius: 999px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+      cursor: pointer;
+    }
+
+    /* ====================== BUTTON ====================== */
+    .btn-analyze {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 18px 24px;
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+      box-shadow: 0 8px 25px rgba(17,24,39,0.15);
+    }
+    .btn-analyze:active { transform: scale(0.96); }
+    .btn-analyze:disabled { background: #e5e5e5; color: #999; }
+
+    /* ====================== RISULTATI ====================== */
+    .results { display: none; margin-top: 32px; }
+    .results.visible { display: block; }
+    .result-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(22px) saturate(180%);
+      -webkit-backdrop-filter: blur(22px) saturate(180%);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(31,38,135,0.08);
+    }
+
+    /* ====================== SVG LIQUID FILTER ====================== */
+    .svg-filters { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+    /* ====================== TOAST ====================== */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111827;
+      color: white;
+      padding: 12px 26px;
+      border-radius: 999px;
+      font-size: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      opacity: 0;
+      transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+      z-index: 1000;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-12px); }
+  </style>
+</head>
+<body>
+  <!-- SVG Liquid Glass Displacement (livello 3) -->
+  <svg class="svg-filters" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="liquid" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.018" numOctaves="3" seed="5" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+      <div class="logo">LariantAi</div>
+      <div class="subtitle">Trova il prodotto al prezzo più basso</div>
+    </div>
+
+    <!-- UPLOAD CARD (Liquid Glass) -->
+    <div class="glass" id="upload-card" onclick="triggerUpload()">
+      <div class="upload-area">
+        <div class="upload-icon">📸</div>
+        <div class="upload-title">Fotografa o carica il capo</div>
+        <div class="upload-subtitle">Scatta una foto o scegli dalla galleria.<br>Funziona su scarpe, vestiti e accessori.</div>
+      </div>
+    </div>
+
+    <!-- PREVIEW -->
+    <div id="preview-container" class="preview-container glass">
+      <img id="preview-img" src="" alt="Preview" />
+      <div class="change-photo" onclick="triggerUpload()">Cambia foto</div>
+    </div>
+
+    <!-- PULSANTE ANALIZZA (Liquid Glass) -->
+    <button id="btn-analyze" class="glass btn-analyze" onclick="analyzeImage()" disabled>
+      Analizza con AI
+    </button>
+
+    <!-- RISULTATI -->
+    <div id="results" class="results"></div>
+  </div>
+
+  <!-- TOAST -->
+  <div id="toast" class="toast"></div>
+
+  <!-- INPUT NASCOSTO (nessun testo "Scegli file") -->
+  <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none" />
+
+  <script>
+    let currentFile = null;
+    let isAnalyzing = false;
+
+    function triggerUpload() {
+      if (isAnalyzing) return;
+      document.getElementById('file-input').click();
+    }
+
+    document.getElementById('file-input').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      currentFile = file;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        document.getElementById('preview-img').src = ev.target.result;
+        document.getElementById('upload-card').style.display = 'none';
+        document.getElementById('preview-container').style.display = 'block';
+        document.getElementById('btn-analyze').disabled = false;
+        showToast('📸 Foto caricata');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    async function analyzeImage() {
+      if (!currentFile || isAnalyzing) return;
+      isAnalyzing = true;
+      const btn = document.getElementById('btn-analyze');
+      btn.textContent = 'Analisi in corso...';
+      btn.disabled = true;
+
+      await new Promise(r => setTimeout(r, 2100));
+
+      renderResults();
+      showToast('✅ Nike Alphafly 3 riconosciuta con Liquid Glass');
+      
+      isAnalyzing = false;
+    }
+
+    function renderResults() {
+      const resultsDiv = document.getElementById('results');
+      resultsDiv.innerHTML = `
+        <div class="result-card glass">
+          <div style="display:flex;gap:18px;align-items:center;margin-bottom:20px">
+            <div style="font-size:52px">👟</div>
+            <div>
+              <div style="font-size:18px;font-weight:600">Nike Alphafly 3</div>
+              <div style="font-size:14px;color:#4b5563">Laser Orange / Citron Pulse / Volt</div>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <a href="https://www.google.com/search?tbm=shop&q=Nike+Alphafly+3+Laser+Orange+Volt&hl=it" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;text-decoration:none;color:inherit">
+              <span style="font-size:24px">🔎</span>
+              <span style="flex:1;font-weight:500">Google Shopping</span>
+              <span style="font-weight:600">da €265</span>
+            </a>
+            <a href="https://www.amazon.it/s?k=Nike+Alphafly+3+Laser+Orange+Volt" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;text-decoration:none;color:inherit">
+              <span style="font-size:24px">🛒</span>
+              <span style="flex:1;font-weight:500">Amazon.it</span>
+              <span style="font-weight:600">da €265</span>
+            </a>
+            <a href="https://www.zalando.it/catalog/?q=Nike+Alphafly+3+orange" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;text-decoration:none;color:inherit">
+              <span style="font-size:24px">🟠</span>
+              <span style="flex:1;font-weight:500">Zalando</span>
+              <span style="font-weight:600">da €269</span>
+            </a>
+          </div>
+        </div>
+      `;
+      resultsDiv.classList.add('visible');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2800);
+    }
+
+    // Avvio
+    showToast('👋 Benvenuto in LariantAi');
+  </script>
+</body>
+</html>
