@@ -1,134 +1,319 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#f8f9fc" />
-  <title>LariantAi</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="theme-color" content="#000000"/>
+  <title>LariantAI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root {
-      --glass-bg: rgba(255,255,255,0.30);
-      --glass-border: rgba(255,255,255,0.85);
-      --text-primary: #111827;
-      --accent: #111827;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --accent: #e91e8c;
+      --accent-dark: #c4176f;
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
     }
-    * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #f8f9fc;
-      background-image: 
-        radial-gradient(ellipse 70% 50% at 15% 15%, rgba(220,232,255,0.65) 0%, transparent 65%),
-        radial-gradient(ellipse 60% 70% at 85% 85%, rgba(232,220,255,0.55) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(220,255,232,0.35) 0%, transparent 70%);
-      min-height: 100dvh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      color: var(--text-primary);
-    }
-    .container { width: 100%; max-width: 380px; }
 
-    .glass {
-      background: var(--glass-bg);
-      backdrop-filter: blur(22px) saturate(180%);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      border: 1px solid var(--glass-border);
-      border-radius: 24px;
-      box-shadow: 0 8px 32px rgba(31,38,135,0.08), inset 0 4px 20px rgba(255,255,255,0.35);
-      position: relative;
+    *, *::before, *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%; overflow: hidden;
+      font-family: var(--font);
+      background: #000;
+      color: #fff;
+    }
+
+    /* ── FULL-SCREEN PHOTO ── */
+    #photo-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: #111;
       overflow: hidden;
     }
-    .glass::before {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      background: linear-gradient(160deg, rgba(255,255,255,0.90) 0%, rgba(255,255,255,0.25) 30%, transparent 60%);
-      pointer-events: none;
+    #photo-bg img {
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: top center;
+      display: block;
+      transition: opacity 0.5s ease;
     }
-    .glass::after {
-      content: ''; position: absolute; inset: 0; border-radius: inherit;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), inset 0 -1px 0 rgba(255,255,255,0.25),
-                  inset 1px 0 0 rgba(255,255,255,0.65), inset -1px 0 0 rgba(255,255,255,0.35);
-      pointer-events: none;
+    /* Gradient fade verso il basso per il sheet */
+    #photo-bg::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 30%,
+        rgba(0,0,0,0.15) 55%,
+        rgba(0,0,0,0.72) 75%,
+        rgba(0,0,0,0.92) 100%
+      );
     }
-    .glass > * { position: relative; z-index: 3; }
 
-    .header { text-align: center; margin-bottom: 40px; }
-    .logo { font-size: 28px; font-weight: 600; letter-spacing: -0.8px; }
-    .subtitle { font-size: 13px; color: #666666; margin-top: 4px; }
+    /* ── UPLOAD OVERLAY (stato iniziale) ── */
+    #upload-overlay {
+      position: fixed; inset: 0; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 18px; padding: 32px;
+      background: rgba(0,0,0,0.55);
+      backdrop-filter: blur(6px);
+      cursor: pointer;
+      transition: opacity 0.3s;
+    }
+    #upload-overlay.hidden { opacity: 0; pointer-events: none; }
 
-    .upload-area { padding: 52px 28px; text-align: center; cursor: pointer; }
-    .upload-icon { width: 72px; height: 72px; margin: 0 auto 20px; background: rgba(255,255,255,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 36px; }
-    .upload-title { font-size: 17px; font-weight: 600; margin-bottom: 8px; }
-    .upload-subtitle { font-size: 14px; color: #4b5563; line-height: 1.5; }
+    .ul-ring {
+      width: 88px; height: 88px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #upload-overlay:active .ul-ring { transform: scale(0.93); }
+    .ul-ring svg { width: 34px; height: 34px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 
-    .preview-container { display: none; border-radius: 24px; overflow: hidden; margin-bottom: 32px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
-    .preview-container img { width: 100%; display: block; }
-    .change-photo { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,0.95); color: #111; font-size: 13px; padding: 7px 22px; border-radius: 999px; box-shadow: 0 4px 15px rgba(0,0,0,0.12); cursor: pointer; }
+    .ul-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+    .ul-sub   { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
 
-    .btn-analyze { width: 100%; background: var(--accent); color: white; border: none; padding: 18px 24px; font-size: 17px; font-weight: 600; border-radius: 20px; cursor: pointer; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1); }
-    .btn-analyze:active { transform: scale(0.96); }
-    .btn-analyze:disabled { background: #e5e5e5; color: #999; }
+    /* ── BOTTOM SHEET ── */
+    #sheet {
+      position: fixed; left: 0; right: 0;
+      bottom: 0; z-index: 20;
+      transform: translateY(100%);
+      transition: transform 0.5s cubic-bezier(0.34,1.28,0.64,1);
+      padding-bottom: var(--sab);
+    }
+    #sheet.visible { transform: translateY(0); }
 
-    .results { display: none; margin-top: 32px; }
-    .results.visible { display: block; }
-    .result-card { background: var(--glass-bg); backdrop-filter: blur(22px) saturate(180%); border: 1px solid var(--glass-border); border-radius: 24px; padding: 24px; }
+    .sheet-inner {
+      background: rgba(22, 22, 26, 0.82);
+      backdrop-filter: blur(40px) saturate(160%);
+      -webkit-backdrop-filter: blur(40px) saturate(160%);
+      border-top: 1px solid rgba(255,255,255,0.10);
+      border-radius: 28px 28px 0 0;
+      padding: 14px 20px 20px;
+      max-height: 62dvh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
 
+    /* Drag handle */
+    .handle {
+      width: 36px; height: 4px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 99px;
+      margin: 0 auto 16px;
+    }
+
+    /* Sheet header */
+    .sheet-head {
+      display: flex; align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .sheet-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
+    .sheet-sub   { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
+    .sheet-star  { font-size: 22px; filter: drop-shadow(0 0 8px var(--accent)); }
+
+    /* ── ITEM CARD ── */
+    .item-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .item-row {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 18px;
+      padding: 12px 14px;
+      transition: background 0.2s;
+      animation: rowIn 0.4s cubic-bezier(0.34,1.3,0.64,1) both;
+    }
+    .item-row:active { background: rgba(255,255,255,0.12); }
+
+    @keyframes rowIn {
+      from { opacity:0; transform: translateY(14px) scale(0.97); }
+      to   { opacity:1; transform: translateY(0)   scale(1); }
+    }
+
+    .item-thumb {
+      width: 54px; height: 54px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .item-body { flex: 1; min-width: 0; }
+    .item-brand {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 1.1px; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); margin-bottom: 3px;
+    }
+    .item-model {
+      font-size: 15px; font-weight: 700;
+      letter-spacing: -0.2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .item-tipo {
+      font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px;
+    }
+
+    .buy-btn {
+      flex-shrink: 0;
+      background: var(--accent);
+      color: #fff;
+      border: none; cursor: pointer;
+      font-family: var(--font);
+      font-size: 14px; font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 4px 16px rgba(233,30,140,0.40);
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-block; line-height: 1;
+    }
+    .buy-btn:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(233,30,140,0.3); }
+
+    /* ── TOP BAR ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 30;
+      padding: calc(var(--sat) + 14px) 20px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .tb-logo {
+      font-size: 17px; font-weight: 800;
+      letter-spacing: -0.4px; color: #fff;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    }
+    .tb-btn {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff; font-family: var(--font);
+      font-size: 12px; font-weight: 600;
+      padding: 7px 16px; border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .tb-btn:active { transform: scale(0.93); }
+
+    /* ── ANALYZE BTN (stato foto caricata) ── */
+    #analyze-fab {
+      position: fixed; bottom: calc(var(--sab) + 32px); left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      z-index: 25;
+      background: var(--accent);
+      color: #fff; border: none; cursor: pointer;
+      font-family: var(--font);
+      font-size: 16px; font-weight: 700;
+      padding: 17px 40px; border-radius: 999px;
+      box-shadow: 0 6px 28px rgba(233,30,140,0.45),
+                  inset 0 1px 0 rgba(255,255,255,0.25);
+      display: flex; align-items: center; gap: 10px;
+      transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1),
+                  box-shadow 0.2s;
+      white-space: nowrap;
+    }
+    #analyze-fab.visible {
+      transform: translateX(-50%) translateY(0);
+    }
+    #analyze-fab:active { box-shadow: 0 3px 12px rgba(233,30,140,0.35); }
+    #analyze-fab svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+    .fab-spin { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TOAST ── */
     .toast {
-      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-      background: #111827; color: white; padding: 12px 26px; border-radius: 999px;
-      font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); opacity: 0; transition: all 0.35s;
-      z-index: 1000;
+      position: fixed; bottom: calc(var(--sab) + 110px); left: 50%;
+      transform: translateX(-50%) translateY(40px);
+      background: rgba(20,20,25,0.92);
+      backdrop-filter: blur(16px);
+      color: #fff; font-size: 13px; font-weight: 500;
+      padding: 10px 22px; border-radius: 999px;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
+      z-index: 99; white-space: nowrap; opacity: 0;
+      transition: all 0.4s cubic-bezier(0.34,1.36,0.64,1);
     }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(-12px); }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Scrollbar dark */
+    .sheet-inner::-webkit-scrollbar { width: 3px; }
+    .sheet-inner::-webkit-scrollbar-track { background: transparent; }
+    .sheet-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 99px; }
   </style>
 </head>
 <body>
-  <svg class="svg-filters" xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <defs>
-      <filter id="liquid"><feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" result="noise"/><feDisplacementMap in="SourceGraphic" in2="noise" scale="7"/></filter>
-    </defs>
-  </svg>
 
-  <div class="container">
-    <div class="header">
-      <div class="logo">LariantAi</div>
-      <div class="subtitle">Trova il prodotto al prezzo più basso</div>
-    </div>
+  <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
 
-    <div class="glass" id="upload-card" onclick="triggerUpload()">
-      <div class="upload-area">
-        <div class="upload-icon">📸</div>
-        <div class="upload-title">Fotografa o carica il capo</div>
-        <div class="upload-subtitle">Scatta una foto o scegli dalla galleria.<br>Funziona su scarpe, vestiti e accessori.</div>
-      </div>
-    </div>
-
-    <div id="preview-container" class="preview-container glass">
-      <img id="preview-img" src="" alt="Preview" />
-      <div class="change-photo" onclick="triggerUpload()">Cambia foto</div>
-    </div>
-
-    <button id="btn-analyze" class="glass btn-analyze" onclick="analyzeImage()" disabled>
-      Analizza con AI
-    </button>
-
-    <div id="results" class="results"></div>
+  <!-- PHOTO BG -->
+  <div id="photo-bg">
+    <img id="bg-img" src="" alt="" style="opacity:0"/>
   </div>
 
-  <div id="toast" class="toast"></div>
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="tb-logo">LariantAI</div>
+    <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">
+      ✎ Cambia
+    </button>
+  </div>
 
-  <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none" />
+  <!-- UPLOAD OVERLAY -->
+  <div id="upload-overlay" onclick="triggerUpload()">
+    <div class="ul-ring">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+    </div>
+    <div class="ul-title">Fotografa il tuo outfit</div>
+    <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio.</div>
+  </div>
+
+  <!-- ANALYZE FAB -->
+  <button id="analyze-fab" onclick="analyzeImage()">
+    <svg id="fab-icon" viewBox="0 0 24 24">
+      <path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/>
+      <path d="M12 8v4l3 3"/>
+    </svg>
+    <span id="fab-text">Analizza outfit</span>
+  </button>
+
+  <!-- BOTTOM SHEET -->
+  <div id="sheet">
+    <div class="sheet-inner">
+      <div class="handle"></div>
+      <div class="sheet-head">
+        <div>
+          <div class="sheet-title">Outfit Detected</div>
+          <div class="sheet-sub" id="sheet-sub">— capi identificati</div>
+        </div>
+        <div class="sheet-star">✦</div>
+      </div>
+      <div class="item-list" id="item-list"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
   <script>
-    // ================== INSERISCI QUI LA TUA CHIAVE GEMINI ==================
-    const GEMINI_API_KEY = "AIzaSyDiwVkes5hAkQLKJgObfybnbj_MAT6nRRg";   // ← SOSTITUISCI CON LA TUA CHIAVE
-
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
+    // ══════════════════════════════════════════
+    //  STATO
+    // ══════════════════════════════════════════
     let currentFile = null;
     let isAnalyzing = false;
 
+    // ══════════════════════════════════════════
+    //  UPLOAD
+    // ══════════════════════════════════════════
     function triggerUpload() {
       if (isAnalyzing) return;
       document.getElementById('file-input').click();
@@ -138,109 +323,136 @@
       const file = e.target.files[0];
       if (!file) return;
       currentFile = file;
+
       const reader = new FileReader();
       reader.onload = ev => {
-        document.getElementById('preview-img').src = ev.target.result;
-        document.getElementById('upload-card').style.display = 'none';
-        document.getElementById('preview-container').style.display = 'block';
-        document.getElementById('btn-analyze').disabled = false;
+        // Mostra foto come sfondo
+        const img = document.getElementById('bg-img');
+        img.src = ev.target.result;
+        img.style.opacity = '1';
+
+        // Nascondi overlay, mostra bottone
+        document.getElementById('upload-overlay').classList.add('hidden');
+        document.getElementById('analyze-fab').classList.add('visible');
+        document.getElementById('change-btn').style.display = 'block';
+
+        // Nascondi sheet precedente
+        document.getElementById('sheet').classList.remove('visible');
+        document.getElementById('item-list').innerHTML = '';
+
         showToast('📸 Foto caricata');
       };
       reader.readAsDataURL(file);
     });
 
+    // ══════════════════════════════════════════
+    //  ANALISI — chiama il backend Railway
+    // ══════════════════════════════════════════
     async function analyzeImage() {
       if (!currentFile || isAnalyzing) return;
       isAnalyzing = true;
-      const btn = document.getElementById('btn-analyze');
-      btn.textContent = "Analisi con Gemini AI...";
-      btn.disabled = true;
-
-      const base64 = await fileToBase64(currentFile);
-
-      const prompt = `Analizza questa foto di un prodotto (scarpa, vestito o accessorio). Rispondi SOLO con JSON valido:
-      {
-        "brand": "es. Nike",
-        "modello": "es. Alphafly 3",
-        "colorway": "es. Laser Orange / Citron Pulse / Volt",
-        "tipo": "es. Scarpe running maratona",
-        "confidence": 0.95
-      }`;
+      setFabLoading(true);
 
       try {
-        const res = await fetch(GEMINI_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }, { inline_data: { mime_type: "image/jpeg", data: base64 } }] }]
-          })
+        const base64   = await toBase64(currentFile);
+        const mimeType = currentFile.type || 'image/jpeg';
+
+        const res = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ base64, mimeType })
         });
 
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        const text = data.candidates[0].content.parts[0].text;
-        const risultato = JSON.parse(text.replace(/```json|```/g, ""));
 
-        renderRealResults(risultato);
-        showToast(`✅ Riconosciuto: ${risultato.brand} ${risultato.modello}`);
-      } catch (e) {
-        showToast("❌ Errore Gemini – controlla la chiave API");
+        if (data.error) throw new Error(data.error);
+
+        renderSheet(data.items ?? []);
+        showToast(`✅ ${data.items?.length ?? 0} capi riconosciuti`);
+
+      } catch (err) {
+        console.error(err);
+        showToast('❌ ' + (err.message || 'Errore analisi'));
+      } finally {
+        isAnalyzing = false;
+        setFabLoading(false);
       }
-
-      isAnalyzing = false;
-      btn.textContent = "Analizza di nuovo";
-      btn.disabled = false;
     }
 
-    function fileToBase64(file) {
-      return new Promise(resolve => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]);
-        reader.readAsDataURL(file);
+    // ══════════════════════════════════════════
+    //  RENDER SHEET
+    // ══════════════════════════════════════════
+    function renderSheet(items) {
+      const list = document.getElementById('item-list');
+      const sub  = document.getElementById('sheet-sub');
+
+      sub.textContent = `${items.length} item${items.length !== 1 ? 's' : ''} identified`;
+      list.innerHTML = '';
+
+      items.forEach((item, i) => {
+        const q = encodeURIComponent(`${item.brand !== 'Unknown' ? item.brand + ' ' : ''}${item.modello}`);
+        const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it`;
+
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.style.animationDelay = `${i * 0.07}s`;
+        row.innerHTML = `
+          <div class="item-thumb">${item.emoji || '👗'}</div>
+          <div class="item-body">
+            <div class="item-brand">${item.brand || 'Brand'}</div>
+            <div class="item-model">${item.modello || 'Modello'}</div>
+            <div class="item-tipo">${item.tipo || ''}</div>
+          </div>
+          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Buy</a>
+        `;
+        list.appendChild(row);
+      });
+
+      document.getElementById('sheet').classList.add('visible');
+    }
+
+    // ══════════════════════════════════════════
+    //  UI HELPERS
+    // ══════════════════════════════════════════
+    function setFabLoading(on) {
+      const fab  = document.getElementById('analyze-fab');
+      const icon = document.getElementById('fab-icon');
+      const txt  = document.getElementById('fab-text');
+
+      if (on) {
+        icon.outerHTML = `<div class="fab-spin" id="fab-icon"></div>`;
+        txt.textContent = 'Analisi…';
+        fab.style.pointerEvents = 'none';
+      } else {
+        const sp = document.getElementById('fab-icon');
+        if (sp) sp.outerHTML = `
+          <svg id="fab-icon" viewBox="0 0 24 24" fill="none"
+               stroke="white" stroke-width="2.2" stroke-linecap="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>`;
+        txt.textContent = 'Analizza di nuovo';
+        fab.style.pointerEvents = 'auto';
+      }
+    }
+
+    function toBase64(file) {
+      return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload  = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
       });
     }
 
-    function renderRealResults(r) {
-      const q = encodeURIComponent(`${r.brand} ${r.modello} ${r.colorway || ''}`);
-      const resultsDiv = document.getElementById('results');
-      resultsDiv.innerHTML = `
-        <div class="result-card glass">
-          <div style="display:flex;gap:18px;align-items:center;margin-bottom:20px">
-            <div style="font-size:52px">👟</div>
-            <div>
-              <div style="font-size:18px;font-weight:600">${r.brand} ${r.modello}</div>
-              <div style="font-size:14px;color:#4b5563">${r.colorway || ''} – ${r.tipo || 'Prodotto'}</div>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <a href="https://www.google.com/search?tbm=shop&q=${q}&hl=it" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;text-decoration:none;color:inherit">
-              <span style="font-size:24px">🔎</span>
-              <span style="flex:1;font-weight:500">Google Shopping</span>
-              <span style="font-weight:600">Prezzo più basso</span>
-            </a>
-            <a href="https://www.amazon.it/s?k=${q}" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;text-decoration:none;color:inherit">
-              <span style="font-size:24px">🛒</span>
-              <span style="flex:1;font-weight:500">Amazon.it</span>
-              <span style="font-weight:600">da €265</span>
-            </a>
-            <a href="https://www.zalando.it/catalog/?q=${q}" target="_blank" style="display:flex;align-items:center;gap:14px;padding:14px;background:rgba(255,255,255,0.5);border-radius:16px;text-decoration:none;color:inherit">
-              <span style="font-size:24px">🟠</span>
-              <span style="flex:1;font-weight:500">Zalando</span>
-              <span style="font-weight:600">da €269</span>
-            </a>
-          </div>
-        </div>
-      `;
-      resultsDiv.classList.add('visible');
-    }
-
+    let toastTimer;
     function showToast(msg) {
-      const toast = document.getElementById('toast');
-      toast.textContent = msg;
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 2800);
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
     }
-
-    showToast('👋 Benvenuto in LariantAi');
   </script>
 </body>
 </html>
