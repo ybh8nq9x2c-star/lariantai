@@ -8,7 +8,13 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root { --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; --accent: #e91e8c; --accent-dark: #c4176f; --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
+    :root {
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --accent: #e91e8c;
+      --sand: #d4b89e;           /* ← COLORE SABBIA */
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+    }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overflow: hidden; font-family: var(--font); background: #000; color: #fff; }
     #photo-bg { position: fixed; inset: 0; z-index: 0; background: #111; overflow: hidden; }
@@ -23,12 +29,12 @@
     .ul-sub { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
     #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.34,1.28,0.64,1); padding-bottom: var(--sab); }
     #sheet.visible { transform: translateY(0); }
-    .sheet-inner { background: rgba(22,22,26,0.82); backdrop-filter: blur(40px) saturate(160%); -webkit-backdrop-filter: blur(40px) saturate(160%); border-top: 1px solid rgba(255,255,255,0.10); border-radius: 28px 28px 0 0; padding: 14px 20px 180px; max-height: 62dvh; overflow-y: auto; }
+    .sheet-inner { background: rgba(22,22,26,0.92); backdrop-filter: blur(40px) saturate(160%); border-top: 1px solid rgba(255,255,255,0.10); border-radius: 28px 28px 0 0; padding: 14px 20px 200px; max-height: 65dvh; overflow-y: auto; overscroll-behavior: contain; }
     .handle { width: 36px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 99px; margin: 0 auto 16px; }
     .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
     .sheet-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
     .sheet-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
-    .item-list { display: flex; flex-direction: column; gap: 10px; }
+    .item-list { display: flex; flex-direction: column; gap: 12px; }
     .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 12px 14px; animation: rowIn 0.4s cubic-bezier(0.34,1.3,0.64,1) both; }
     @keyframes rowIn { from { opacity:0; transform: translateY(14px) scale(0.97); } to { opacity:1; transform: translateY(0) scale(1); } }
     .item-thumb { width: 54px; height: 54px; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
@@ -37,8 +43,20 @@
     .item-model { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .item-tipo { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
     .confidence { font-size: 11px; color: #0f0; font-weight: 600; }
-    .buy-group { display: flex; gap: 6px; }
-    .buy-btn { flex-shrink: 0; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 999px; white-space: nowrap; }
+    .buy-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .buy-btn {
+      flex-shrink: 0;
+      background: var(--sand);
+      color: #222;
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 9px 16px;
+      border-radius: 999px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      transition: all 0.2s;
+    }
+    .buy-btn:active { transform: scale(0.92); }
     #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; }
     .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
     .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
@@ -61,7 +79,7 @@
   <div id="upload-overlay" onclick="triggerUpload()">
     <div class="ul-ring"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
     <div class="ul-title">Fotografa il tuo outfit</div>
-    <div class="ul-sub">Scatta o scegli dalla galleria.<br>Riconosce ogni capo.</div>
+    <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio.</div>
   </div>
   <button id="analyze-fab" onclick="analyzeImage()">
     <svg id="fab-icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 3"/></svg>
@@ -101,6 +119,7 @@
         document.getElementById('analyze-fab').classList.add('visible');
         document.getElementById('change-btn').style.display = 'block';
         document.getElementById('sheet').classList.remove('visible');
+        document.getElementById('item-list').innerHTML = '';
         showToast('📸 Foto caricata');
       };
       reader.readAsDataURL(file);
@@ -144,7 +163,6 @@
         });
         const data = await res.json();
         if (data.error) throw new Error(data.error);
-
         renderSheet(data.items ?? []);
         saveToHistory(data.items);
         showToast(`✅ ${data.items?.length ?? 0} capi riconosciuti`);
@@ -180,7 +198,7 @@
           <div class="item-body">
             <div class="item-brand">${item.brand || 'Brand'}</div>
             <div class="item-model">${item.modello || 'Modello'}</div>
-            <div class="item-tipo">${item.tipo} • ${item.colore || ''} • ${item.materiale || ''}</div>
+            <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''} • ${item.materiale || ''}</div>
             <div class="confidence">Confidence: ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
           </div>
           <div class="buy-group">
@@ -202,8 +220,8 @@
 
     function showHistory() {
       if (history.length === 0) return showToast('📭 Nessuna scansione salvata');
-      let html = '<h3 style="margin:15px 0 10px">📖 Storico Scansioni</h3>';
-      history.forEach((entry, i) => {
+      let html = '<h3 style="margin:15px 0 10px;color:#fff">📖 Storico Scansioni</h3>';
+      history.forEach(entry => {
         html += `<div style="background:rgba(255,255,255,0.07);padding:12px;border-radius:12px;margin-bottom:8px"><small>${entry.date}</small><br>`;
         entry.items.forEach(it => html += `• ${it.brand} ${it.modello}<br>`);
         html += '</div>';
