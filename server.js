@@ -21,10 +21,10 @@ app.post('/api/analyze', async (req, res) => {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",   // ← Cambiato: +30-40% precisione rispetto al lite
+        model: "gemini-2.5-flash",
         generationConfig: { 
           responseMimeType: "application/json",
-          temperature: 0.1          // Bassa = risposte più precise e stabili
+          temperature: 0.1 
         }
       });
 
@@ -36,20 +36,19 @@ Rispondi **SOLO** con un array JSON valido in questo formato esatto:
   {
     "brand": "Nike|Zara|Gucci|Adidas|Unknown",
     "modello": "nome modello esatto o descrizione precisa",
-    "tipo": "Sneakers|Jeans|Felpa|Camicia|Giacca",
-    "colore": "nero|blu navy|rosso",
-    "emoji": "👟",
-    "confidence": 95
+    "tipo": "Sneakers|Jeans|Felpa|Camicia",
+    "colore": "nero|bianco|rosso|blu navy|grigio|rosa",
+    "emoji": "👟"
   }
 ]
 
-Esempi reali:
+Esempi:
 [
-  {"brand":"Nike","modello":"Air Force 1 '07","tipo":"Sneakers","colore":"bianco","emoji":"👟","confidence":92},
-  {"brand":"Zara","modello":"Jeans skinny vita alta","tipo":"Jeans","colore":"blu scuro","emoji":"👖","confidence":88}
+  {"brand":"Nike","modello":"Air Force 1 '07","tipo":"Sneakers","colore":"bianco","emoji":"👟"},
+  {"brand":"Zara","modello":"Jeans skinny vita alta","tipo":"Jeans","colore":"blu scuro","emoji":"👖"}
 ]
 
-Riconosci brand, modello e colore quando possibile.`;
+Riconosci sempre il colore quando visibile.`;
 
       const result = await model.generateContent([
         prompt,
@@ -78,4 +77,4 @@ Riconosci brand, modello e colore quando possibile.`;
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 LariantAI su gemini-2.5-flash | Porta ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 LariantAI con colore + fix UI | Porta ${PORT}`));
