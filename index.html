@@ -23,38 +23,31 @@
     .ul-sub { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
     #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.34,1.28,0.64,1); padding-bottom: var(--sab); }
     #sheet.visible { transform: translateY(0); }
-    .sheet-inner { background: rgba(22,22,26,0.82); backdrop-filter: blur(40px) saturate(160%); -webkit-backdrop-filter: blur(40px) saturate(160%); border-top: 1px solid rgba(255,255,255,0.10); border-radius: 28px 28px 0 0; padding: 14px 20px 130px; max-height: 62dvh; overflow-y: auto; overscroll-behavior: contain; }
+    .sheet-inner { background: rgba(22,22,26,0.82); backdrop-filter: blur(40px) saturate(160%); -webkit-backdrop-filter: blur(40px) saturate(160%); border-top: 1px solid rgba(255,255,255,0.10); border-radius: 28px 28px 0 0; padding: 14px 20px 180px; max-height: 62dvh; overflow-y: auto; }
     .handle { width: 36px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 99px; margin: 0 auto 16px; }
     .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
     .sheet-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
     .sheet-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
-    .sheet-star { font-size: 22px; filter: drop-shadow(0 0 8px var(--accent)); }
     .item-list { display: flex; flex-direction: column; gap: 10px; }
-    .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 12px 14px; transition: background 0.2s; animation: rowIn 0.4s cubic-bezier(0.34,1.3,0.64,1) both; }
-    .item-row:active { background: rgba(255,255,255,0.12); }
+    .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 12px 14px; animation: rowIn 0.4s cubic-bezier(0.34,1.3,0.64,1) both; }
     @keyframes rowIn { from { opacity:0; transform: translateY(14px) scale(0.97); } to { opacity:1; transform: translateY(0) scale(1); } }
-    .item-thumb { width: 54px; height: 54px; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.08); }
+    .item-thumb { width: 54px; height: 54px; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
     .item-body { flex: 1; min-width: 0; }
     .item-brand { font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
     .item-model { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .item-tipo { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
-    .buy-btn { flex-shrink: 0; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 14px; font-weight: 700; padding: 10px 18px; border-radius: 999px; box-shadow: 0 4px 16px rgba(233,30,140,0.40); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s; white-space: nowrap; text-decoration: none; display: inline-block; line-height: 1; }
-    .buy-btn:active { transform: scale(0.92); box-shadow: 0 2px 8px rgba(233,30,140,0.3); }
+    .confidence { font-size: 11px; color: #0f0; font-weight: 600; }
+    .buy-group { display: flex; gap: 6px; }
+    .buy-btn { flex-shrink: 0; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 12px; font-weight: 700; padding: 8px 14px; border-radius: 999px; white-space: nowrap; }
     #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; }
-    .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
-    .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-family: var(--font); font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
-    .tb-btn:active { transform: scale(0.93); }
-    #analyze-fab { position: fixed; bottom: calc(var(--sab) + 32px); left: 50%; transform: translateX(-50%) translateY(100px); z-index: 25; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 16px; font-weight: 700; padding: 17px 40px; border-radius: 999px; box-shadow: 0 6px 28px rgba(233,30,140,0.45), inset 0 1px 0 rgba(255,255,255,0.25); display: flex; align-items: center; gap: 10px; transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.2s; white-space: nowrap; }
+    .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
+    .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
+    #analyze-fab { position: fixed; bottom: calc(var(--sab) + 32px); left: 50%; transform: translateX(-50%) translateY(100px); z-index: 25; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 16px; font-weight: 700; padding: 17px 40px; border-radius: 999px; box-shadow: 0 6px 28px rgba(233,30,140,0.45); }
     #analyze-fab.visible { transform: translateX(-50%) translateY(0); }
-    #analyze-fab:active { box-shadow: 0 3px 12px rgba(233,30,140,0.35); }
-    #analyze-fab svg { width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 2.2; stroke-linecap: round; }
-    .fab-spin { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .toast { position: fixed; bottom: calc(var(--sab) + 110px); left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(20,20,25,0.92); backdrop-filter: blur(16px); color: #fff; font-size: 13px; font-weight: 500; padding: 10px 22px; border-radius: 999px; box-shadow: 0 6px 24px rgba(0,0,0,0.3); z-index: 99; white-space: nowrap; opacity: 0; transition: all 0.4s cubic-bezier(0.34,1.36,0.64,1); }
+    .skeleton { background: rgba(255,255,255,0.08); border-radius: 12px; height: 68px; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
+    .toast { position: fixed; bottom: calc(var(--sab) + 110px); left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(20,20,25,0.92); backdrop-filter: blur(16px); color: #fff; font-size: 13px; padding: 10px 22px; border-radius: 999px; z-index: 99; opacity: 0; transition: all 0.4s; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .sheet-inner::-webkit-scrollbar { width: 3px; }
-    .sheet-inner::-webkit-scrollbar-track { background: transparent; }
-    .sheet-inner::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 99px; }
   </style>
 </head>
 <body>
@@ -62,12 +55,13 @@
   <div id="photo-bg"><img id="bg-img" src="" alt="" style="opacity:0"/></div>
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
+    <button class="tb-btn" onclick="showHistory()">📖 Storico</button>
     <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">✎ Cambia</button>
   </div>
   <div id="upload-overlay" onclick="triggerUpload()">
     <div class="ul-ring"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
     <div class="ul-title">Fotografa il tuo outfit</div>
-    <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio.</div>
+    <div class="ul-sub">Scatta o scegli dalla galleria.<br>Riconosce ogni capo.</div>
   </div>
   <button id="analyze-fab" onclick="analyzeImage()">
     <svg id="fab-icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 3"/></svg>
@@ -80,7 +74,7 @@
         <div><div class="sheet-title">Outfit Detected</div><div class="sheet-sub" id="sheet-sub">— capi identificati</div></div>
         <div class="sheet-star">✦</div>
       </div>
-      <div class="item-list" id="item-list"></div>
+      <div id="item-list" class="item-list"></div>
     </div>
   </div>
   <div class="toast" id="toast"></div>
@@ -88,6 +82,7 @@
   <script>
     let currentFile = null;
     let isAnalyzing = false;
+    let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
 
     function triggerUpload() {
       if (isAnalyzing) return;
@@ -100,38 +95,34 @@
       currentFile = file;
       const reader = new FileReader();
       reader.onload = ev => {
-        const img = document.getElementById('bg-img');
-        img.src = ev.target.result;
-        img.style.opacity = '1';
+        document.getElementById('bg-img').src = ev.target.result;
+        document.getElementById('bg-img').style.opacity = '1';
         document.getElementById('upload-overlay').classList.add('hidden');
         document.getElementById('analyze-fab').classList.add('visible');
         document.getElementById('change-btn').style.display = 'block';
         document.getElementById('sheet').classList.remove('visible');
-        document.getElementById('item-list').innerHTML = '';
         showToast('📸 Foto caricata');
       };
       reader.readAsDataURL(file);
     });
 
-    // 🔥 RESIZE ULTRA-VELOCE (768px + 80% qualità)
     async function resizeImage(file) {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          let { width, height } = img;
+          let {width, height} = img;
           const MAX = 768;
           if (width > MAX || height > MAX) {
             if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
             else { width = Math.round(width * MAX / height); height = MAX; }
           }
           canvas.width = width; canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          canvas.toBlob(blob => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.readAsDataURL(blob);
+          canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+          canvas.toBlob(b => {
+            const r = new FileReader();
+            r.onload = () => resolve(r.result.split(',')[1]);
+            r.readAsDataURL(b);
           }, 'image/jpeg', 0.80);
         };
         img.src = URL.createObjectURL(file);
@@ -142,37 +133,45 @@
       if (!currentFile || isAnalyzing) return;
       isAnalyzing = true;
       setFabLoading(true);
+      showSkeleton();
+
       try {
         const base64 = await resizeImage(currentFile);
-        const mimeType = 'image/jpeg';
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ base64, mimeType })
+          body: JSON.stringify({ base64, mimeType: 'image/jpeg' })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.error) throw new Error(data.error);
+
         renderSheet(data.items ?? []);
+        saveToHistory(data.items);
         showToast(`✅ ${data.items?.length ?? 0} capi riconosciuti`);
       } catch (err) {
-        console.error(err);
-        showToast('❌ ' + (err.message || 'Errore analisi'));
+        showToast('❌ ' + (err.message || 'Errore'));
       } finally {
         isAnalyzing = false;
         setFabLoading(false);
       }
     }
 
+    function showSkeleton() {
+      const list = document.getElementById('item-list');
+      list.innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
+      document.getElementById('sheet').classList.add('visible');
+    }
+
     function renderSheet(items) {
       const list = document.getElementById('item-list');
-      const sub = document.getElementById('sheet-sub');
-      sub.textContent = `${items.length} item${items.length !== 1 ? 's' : ''} identified`;
       list.innerHTML = '';
       items.forEach((item, i) => {
-        const searchTerm = `${item.brand !== 'Unknown' ? item.brand + ' ' : ''}${item.modello} ${item.colore || ''}`.trim();
+        const searchTerm = `${item.brand} ${item.modello} ${item.colore || ''}`.trim();
         const q = encodeURIComponent(searchTerm);
-        const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
+        const googleUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it`;
+        const amazonUrl = `https://www.amazon.it/s?k=${q}`;
+        const zalandoUrl = `https://www.zalando.it/catalog/?q=${q}`;
+
         const row = document.createElement('div');
         row.className = 'item-row';
         row.style.animationDelay = `${i * 0.07}s`;
@@ -181,12 +180,35 @@
           <div class="item-body">
             <div class="item-brand">${item.brand || 'Brand'}</div>
             <div class="item-model">${item.modello || 'Modello'}</div>
-            <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
+            <div class="item-tipo">${item.tipo} • ${item.colore || ''} • ${item.materiale || ''}</div>
+            <div class="confidence">Confidence: ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
           </div>
-          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>
+          <div class="buy-group">
+            <a class="buy-btn" href="${googleUrl}" target="_blank">Google</a>
+            <a class="buy-btn" href="${amazonUrl}" target="_blank">Amazon</a>
+            <a class="buy-btn" href="${zalandoUrl}" target="_blank">Zalando</a>
+          </div>
         `;
         list.appendChild(row);
       });
+    }
+
+    function saveToHistory(items) {
+      const entry = { date: new Date().toLocaleString('it-IT'), items };
+      history.unshift(entry);
+      if (history.length > 20) history.pop();
+      localStorage.setItem('lariantHistory', JSON.stringify(history));
+    }
+
+    function showHistory() {
+      if (history.length === 0) return showToast('📭 Nessuna scansione salvata');
+      let html = '<h3 style="margin:15px 0 10px">📖 Storico Scansioni</h3>';
+      history.forEach((entry, i) => {
+        html += `<div style="background:rgba(255,255,255,0.07);padding:12px;border-radius:12px;margin-bottom:8px"><small>${entry.date}</small><br>`;
+        entry.items.forEach(it => html += `• ${it.brand} ${it.modello}<br>`);
+        html += '</div>';
+      });
+      document.getElementById('item-list').innerHTML = html;
       document.getElementById('sheet').classList.add('visible');
     }
 
