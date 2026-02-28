@@ -45,7 +45,6 @@
     .confidence { font-size: 13px; color: #0f0; font-weight: 600; }
     .buy-btn {
       flex-shrink: 0;
-      background: var(--sand);
       color: #222;
       font-family: var(--font);
       font-size: 13px;
@@ -53,8 +52,8 @@
       padding: 9px 18px;
       border-radius: 999px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      transition: all 0.2s;
     }
-    .buy-btn:active { transform: scale(0.92); }
     #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; }
     .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
     .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
@@ -62,16 +61,15 @@
       position: fixed; bottom: calc(var(--sab) + 24px); left: 50%;
       transform: translateX(-50%) translateY(100px);
       z-index: 25;
-      background: var(--accent);
-      color: #fff;
       border: none;
       cursor: pointer;
       font-family: var(--font);
-      font-size: 14px;          /* più piccolo */
+      font-size: 14px;
       font-weight: 700;
-      padding: 12px 28px;       /* più piccolo */
+      padding: 12px 28px;
       border-radius: 999px;
-      box-shadow: 0 6px 20px rgba(233,30,140,0.45);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      color: #fff;
     }
     #analyze-fab.visible { transform: translateX(-50%) translateY(0); }
     .skeleton { background: rgba(255,255,255,0.08); border-radius: 12px; height: 68px; animation: pulse 1.5s infinite; }
@@ -94,7 +92,6 @@
     <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio.</div>
   </div>
   <button id="analyze-fab" onclick="analyzeImage()">
-    <svg id="fab-icon" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 8v4l3 3"/></svg>
     <span id="fab-text">Analizza di nuovo</span>
   </button>
   <div id="sheet">
@@ -110,6 +107,12 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    const colorMap = {
+      'nero': '#111111', 'bianco': '#f8f8f8', 'rosso': '#e74c3c', 'blu': '#3498db',
+      'verde': '#2ecc71', 'giallo': '#f1c40f', 'rosa': '#e91e8c', 'grigio': '#95a5a6',
+      'arancione': '#e67e22', 'marrone': '#8d5524', 'viola': '#9b59b6', 'beige': '#d4b89e'
+    };
+
     let currentFile = null;
     let isAnalyzing = false;
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
@@ -194,7 +197,11 @@
     function renderSheet(items) {
       const list = document.getElementById('item-list');
       list.innerHTML = '';
+
       items.forEach((item, i) => {
+        const colorKey = (item.colore || 'grigio').toLowerCase();
+        const itemColor = colorMap[colorKey] || '#d4b89e';
+
         const searchTerm = `${item.brand} ${item.modello} ${item.colore || ''}`.trim();
         const q = encodeURIComponent(searchTerm);
         const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
@@ -210,10 +217,18 @@
             <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
             <div class="confidence">Confidence: ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
           </div>
-          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>
+          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener" style="background-color:${itemColor};">Compra</a>
         `;
         list.appendChild(row);
       });
+
+      // Pulsante grande "Analizza di nuovo" → colore random tra gli item
+      if (items.length > 0) {
+        const randomItem = items[Math.floor(Math.random() * items.length)];
+        const randomColorKey = (randomItem.colore || 'grigio').toLowerCase();
+        const randomColor = colorMap[randomColorKey] || '#e91e8c';
+        document.getElementById('analyze-fab').style.backgroundColor = randomColor;
+      }
     }
 
     function saveToHistory(items) {
@@ -237,7 +252,7 @@
 
     function setFabLoading(on) {
       const fab = document.getElementById('analyze-fab');
-      const icon = document.getElementById('fab-icon');
+      const icon = document.getElementById('fab-icon') || document.createElement('div');
       const txt = document.getElementById('fab-text');
       if (on) {
         icon.outerHTML = `<div class="fab-spin" id="fab-icon"></div>`;
