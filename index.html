@@ -4,7 +4,6 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#000000"/>
-  <meta name="apple-mobile-web-app-capable" content="yes">
   <title>LariantAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -15,13 +14,9 @@
     #photo-bg { position: fixed; inset: 0; z-index: 0; background: #111; overflow: hidden; }
     #photo-bg img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: opacity 0.5s ease; }
     #photo-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.85) 100%); }
-    #upload-overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); cursor: pointer; transition: opacity 0.3s; }
+    #upload-overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); cursor: pointer; }
     #upload-overlay.hidden { opacity: 0; pointer-events: none; }
-    .ul-ring { width: 88px; height: 88px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
-    #upload-overlay:active .ul-ring { transform: scale(0.93); }
-    .ul-ring svg { width: 34px; height: 34px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-    .ul-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
-    .ul-sub { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
+    .ul-ring { width: 88px; height: 88px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; }
     #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32,0.72,0,1); padding-bottom: var(--sab); }
     #sheet.visible { transform: translateY(0); }
     .sheet-inner { background: rgba(22,22,26,0.95); backdrop-filter: blur(60px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.12); border-radius: 28px 28px 0 0; padding: 14px 20px 240px; max-height: 68dvh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.7); }
@@ -37,11 +32,11 @@
     .item-model { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .item-tipo { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
     .confidence { font-size: 13px; color: #0f0; font-weight: 600; }
-    .buy-btn { flex-shrink: 0; color: #222; font-family: var(--font); font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
-    #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .buy-btn { flex-shrink: 0; background: var(--sand); color: #222; font-family: var(--font); font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; }
     .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
     .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
-    #analyze-fab { position: fixed; bottom: calc(var(--sab) + 20px); left: 50%; transform: translateX(-50%) translateY(100px); z-index: 25; border: none; cursor: pointer; font-family: var(--font); font-size: 13.5px; font-weight: 700; padding: 10px 24px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); color: #fff; transition: all 0.3s; }
+    #analyze-fab { position: fixed; bottom: calc(var(--sab) + 24px); left: 50%; transform: translateX(-50%) translateY(100px); z-index: 25; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 13.5px; font-weight: 700; padding: 10px 24px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
     #analyze-fab.visible { transform: translateX(-50%) translateY(0); }
     .toast { position: fixed; bottom: calc(var(--sab) + 110px); left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(20,20,25,0.92); backdrop-filter: blur(16px); color: #fff; font-size: 13px; padding: 10px 22px; border-radius: 999px; z-index: 99; opacity: 0; transition: all 0.4s; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -77,19 +72,17 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const colorMap = { 'nero':'#111', 'bianco':'#f8f8f8', 'rosso':'#e74c3c', 'blu':'#3498db', 'verde':'#2ecc71', 'giallo':'#f1c40f', 'rosa':'#e91e8c', 'grigio':'#95a5a6', 'arancione':'#e67e22', 'marrone':'#8d5524', 'viola':'#9b59b6', 'beige':'#d4b89e' };
     let currentFile = null;
     let isAnalyzing = false;
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
     let collection = JSON.parse(localStorage.getItem('lariantCollection') || '[]');
     let startY = 0;
 
-    // Swipe to close
+    // Swipe to close (Punto 5)
     function initSwipe() {
-      const sheet = document.getElementById('sheet');
       const inner = document.getElementById('sheet-inner');
       const handle = document.getElementById('handle');
-      handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+      handle.addEventListener('touchstart', e => startY = e.touches[0].clientY);
       handle.addEventListener('touchmove', e => {
         const delta = e.touches[0].clientY - startY;
         if (delta > 0) inner.style.transform = `translateY(${delta}px)`;
@@ -97,7 +90,7 @@
       handle.addEventListener('touchend', e => {
         const delta = e.changedTouches[0].clientY - startY;
         if (delta > 120) {
-          sheet.classList.remove('visible');
+          document.getElementById('sheet').classList.remove('visible');
           inner.style.transform = '';
         } else {
           inner.style.transform = '';
@@ -136,8 +129,8 @@
           let {width, height} = img;
           const MAX = 768;
           if (width > MAX || height > MAX) {
-            if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
-            else { width = Math.round(width * MAX / height); height = MAX; }
+            if (width > height) height = Math.round(height * MAX / width), width = MAX;
+            else width = Math.round(width * MAX / height), height = MAX;
           }
           canvas.width = width; canvas.height = height;
           canvas.getContext('2d').drawImage(img, 0, 0, width, height);
@@ -165,6 +158,7 @@
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         renderSheet(data.items ?? []);
+        document.getElementById('sheet').classList.add('visible');
         showToast(`✅ ${data.items?.length ?? 0} capi riconosciuti`);
       } catch (err) {
         showToast('❌ ' + (err.message || 'Errore'));
@@ -177,16 +171,13 @@
     function renderSheet(items) {
       const list = document.getElementById('item-list');
       list.innerHTML = `
-        <button onclick="saveCurrentOutfit()" style="width:100%;background:#d4b89e;color:#222;padding:14px;border-radius:16px;font-weight:700;margin-bottom:12px;">💾 Salva Outfit</button>
+        <button onclick="saveCurrentOutfit()" style="width:100%;background:#d4b89e;color:#222;padding:14px;border-radius:16px;font-weight:700;margin-bottom:8px;">💾 Salva Outfit</button>
         <button onclick="shareOutfit()" style="width:100%;background:#3498db;color:#fff;padding:14px;border-radius:16px;font-weight:700;">📤 Condividi Outfit</button>
       `;
       items.forEach((item, i) => {
-        const colorKey = (item.colore || 'grigio').toLowerCase();
-        const itemColor = colorMap[colorKey] || '#d4b89e';
         const searchTerm = `${item.brand} ${item.modello} ${item.colore || ''}`.trim();
         const q = encodeURIComponent(searchTerm);
         const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
-
         const row = document.createElement('div');
         row.className = 'item-row';
         row.innerHTML = `
@@ -197,24 +188,17 @@
             <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
             <div class="confidence">Confidence: ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
           </div>
-          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener" style="background-color:${itemColor};">Compra</a>
+          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>
         `;
         list.appendChild(row);
       });
-
-      if (items.length > 0) {
-        const randomItem = items[Math.floor(Math.random() * items.length)];
-        const randomColor = colorMap[(randomItem.colore || 'grigio').toLowerCase()] || '#e91e8c';
-        document.getElementById('analyze-fab').style.backgroundColor = randomColor;
-      }
     }
 
     function saveCurrentOutfit() {
-      const items = [...document.querySelectorAll('.item-row')].map(row => ({
+      const items = Array.from(document.querySelectorAll('.item-row')).map(row => ({
         brand: row.querySelector('.item-brand').textContent,
         modello: row.querySelector('.item-model').textContent,
-        tipo: row.querySelector('.item-tipo').textContent.split(' • ')[0],
-        colore: row.querySelector('.item-tipo').textContent.split(' • ')[1] || ''
+        tipo: row.querySelector('.item-tipo').textContent.split(' • ')[0]
       }));
       const name = prompt("Dai un nome a questo outfit (es. Weekend Casual):") || "Outfit " + new Date().toLocaleDateString('it-IT');
       collection.unshift({ name, date: new Date().toLocaleString('it-IT'), items });
@@ -225,7 +209,7 @@
     function showCollection() {
       let html = '<h3 style="margin:15px 0 10px;color:#fff">💾 La Mia Collezione</h3>';
       if (collection.length === 0) html += '<p style="text-align:center;color:#666;padding:20px;">Nessun outfit salvato ancora</p>';
-      collection.forEach((outfit, i) => {
+      collection.forEach(outfit => {
         html += `<div style="background:rgba(255,255,255,0.07);padding:12px;border-radius:12px;margin-bottom:8px"><small>${outfit.date}</small><br><strong>${outfit.name}</strong><br>`;
         outfit.items.forEach(it => html += `• ${it.brand} ${it.modello}<br>`);
         html += '</div>';
@@ -267,10 +251,8 @@
       toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    // Inizializza swipe
-    window.onload = () => {
-      initSwipe();
-    };
+    // Inizializza swipe (punto 5)
+    window.onload = initSwipe;
   </script>
 </body>
 </html>
