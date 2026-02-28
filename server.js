@@ -24,12 +24,12 @@ app.post('/api/analyze', async (req, res) => {
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       const model = genAI.getGenerativeModel({
-        model: "gemini-2.5-flash",
-        generationConfig: { 
-          responseMimeType: "application/json",
-          temperature: 0.1 
-        }
-      });
+  model: "gemini-2.5-pro",   // ← MODELLO MIGLIORE
+  generationConfig: { 
+    responseMimeType: "application/json",
+    temperature: 0.1 
+  }
+});
 
       const prompt = `Sei un fashion expert italiano. Analizza l'outfit e identifica OGNI capo.
 
