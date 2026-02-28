@@ -113,14 +113,14 @@
       reader.readAsDataURL(file);
     });
 
-    // 🔥 RESIZE AUTOMATICO (max 1024px) - RISOLVE IL PROBLEMA DEFINITIVAMENTE
+    // 🔥 RESIZE ULTRA-VELOCE (768px + 80% qualità)
     async function resizeImage(file) {
       return new Promise((resolve) => {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
           let { width, height } = img;
-          const MAX = 1024;
+          const MAX = 768;
           if (width > MAX || height > MAX) {
             if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
             else { width = Math.round(width * MAX / height); height = MAX; }
@@ -132,7 +132,7 @@
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result.split(',')[1]);
             reader.readAsDataURL(blob);
-          }, 'image/jpeg', 0.85);
+          }, 'image/jpeg', 0.80);
         };
         img.src = URL.createObjectURL(file);
       });
@@ -143,7 +143,7 @@
       isAnalyzing = true;
       setFabLoading(true);
       try {
-        const base64 = await resizeImage(currentFile);   // ← RIDIMENSIONATA!
+        const base64 = await resizeImage(currentFile);
         const mimeType = 'image/jpeg';
         const res = await fetch('/api/analyze', {
           method: 'POST',
@@ -205,8 +205,6 @@
         fab.style.pointerEvents = 'auto';
       }
     }
-
-    function toBase64(file) { /* non più usato */ }
 
     let toastTimer;
     function showToast(msg) {
