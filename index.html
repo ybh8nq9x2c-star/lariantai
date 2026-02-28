@@ -4,6 +4,9 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#000000"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="LariantAI">
   <title>LariantAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -18,8 +21,8 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overflow: hidden; font-family: var(--font); background: #000; color: #fff; }
     #photo-bg { position: fixed; inset: 0; z-index: 0; background: #111; overflow: hidden; }
-    #photo-bg img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: opacity 0.5s ease; }
-    #photo-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.72) 75%, rgba(0,0,0,0.92) 100%); }
+    #photo-bg img, #live-video { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: opacity 0.5s ease; }
+    #photo-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.85) 100%); }
     #upload-overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); cursor: pointer; transition: opacity 0.3s; }
     #upload-overlay.hidden { opacity: 0; pointer-events: none; }
     .ul-ring { width: 88px; height: 88px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1); }
@@ -29,7 +32,7 @@
     .ul-sub { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
     #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.34,1.28,0.64,1); padding-bottom: var(--sab); }
     #sheet.visible { transform: translateY(0); }
-    .sheet-inner { background: rgba(22,22,26,0.92); backdrop-filter: blur(40px) saturate(160%); border-top: 1px solid rgba(255,255,255,0.10); border-radius: 28px 28px 0 0; padding: 14px 20px 220px; max-height: 68dvh; overflow-y: auto; overscroll-behavior: contain; }
+    .sheet-inner { background: rgba(22,22,26,0.95); backdrop-filter: blur(60px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.12); border-radius: 28px 28px 0 0; padding: 14px 20px 220px; max-height: 68dvh; overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
     .handle { width: 36px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 99px; margin: 0 auto 16px; }
     .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
     .sheet-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
@@ -64,12 +67,13 @@
       border: none;
       cursor: pointer;
       font-family: var(--font);
-      font-size: 14px;
+      font-size: 13.5px;
       font-weight: 700;
-      padding: 12px 28px;
+      padding: 10px 24px;
       border-radius: 999px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
       color: #fff;
+      transition: all 0.3s ease;
     }
     #analyze-fab.visible { transform: translateX(-50%) translateY(0); }
     .skeleton { background: rgba(255,255,255,0.08); border-radius: 12px; height: 68px; animation: pulse 1.5s infinite; }
@@ -80,7 +84,10 @@
 </head>
 <body>
   <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
-  <div id="photo-bg"><img id="bg-img" src="" alt="" style="opacity:0"/></div>
+  <div id="photo-bg">
+    <img id="bg-img" src="" alt="" style="opacity:0"/>
+    <video id="live-video" autoplay playsinline style="display:none"></video>
+  </div>
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
     <button class="tb-btn" onclick="showHistory()">📖 Storico</button>
@@ -107,15 +114,42 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const colorMap = {
-      'nero': '#111111', 'bianco': '#f8f8f8', 'rosso': '#e74c3c', 'blu': '#3498db',
-      'verde': '#2ecc71', 'giallo': '#f1c40f', 'rosa': '#e91e8c', 'grigio': '#95a5a6',
-      'arancione': '#e67e22', 'marrone': '#8d5524', 'viola': '#9b59b6', 'beige': '#d4b89e'
-    };
-
+    const colorMap = { 'nero':'#111', 'bianco':'#f8f8f8', 'rosso':'#e74c3c', 'blu':'#3498db', 'verde':'#2ecc71', 'giallo':'#f1c40f', 'rosa':'#e91e8c', 'grigio':'#95a5a6', 'arancione':'#e67e22', 'marrone':'#8d5524', 'viola':'#9b59b6', 'beige':'#d4b89e' };
     let currentFile = null;
     let isAnalyzing = false;
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
+    let stream = null;
+
+    // Camera Live
+    async function startLiveCamera() {
+      if (stream) return;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        const video = document.getElementById('live-video');
+        video.srcObject = stream;
+        video.style.display = 'block';
+        document.getElementById('bg-img').style.opacity = '0';
+        showToast('📷 Camera live attivata – tocca lo schermo per scattare');
+        video.onclick = captureFromLive;
+      } catch(e) { showToast('❌ Impossibile accedere alla camera'); }
+    }
+
+    function captureFromLive() {
+      const video = document.getElementById('live-video');
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob(blob => {
+        currentFile = new File([blob], "live.jpg", { type: "image/jpeg" });
+        document.getElementById('bg-img').src = URL.createObjectURL(blob);
+        document.getElementById('bg-img').style.opacity = '1';
+        video.style.display = 'none';
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+        showToast('📸 Foto catturata dalla camera live');
+      }, 'image/jpeg', 0.85);
+    }
 
     function triggerUpload() {
       if (isAnalyzing) return;
@@ -197,11 +231,9 @@
     function renderSheet(items) {
       const list = document.getElementById('item-list');
       list.innerHTML = '';
-
       items.forEach((item, i) => {
         const colorKey = (item.colore || 'grigio').toLowerCase();
         const itemColor = colorMap[colorKey] || '#d4b89e';
-
         const searchTerm = `${item.brand} ${item.modello} ${item.colore || ''}`.trim();
         const q = encodeURIComponent(searchTerm);
         const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
@@ -222,7 +254,6 @@
         list.appendChild(row);
       });
 
-      // Pulsante grande "Analizza di nuovo" → colore random tra gli item
       if (items.length > 0) {
         const randomItem = items[Math.floor(Math.random() * items.length)];
         const randomColorKey = (randomItem.colore || 'grigio').toLowerCase();
@@ -252,15 +283,11 @@
 
     function setFabLoading(on) {
       const fab = document.getElementById('analyze-fab');
-      const icon = document.getElementById('fab-icon') || document.createElement('div');
       const txt = document.getElementById('fab-text');
       if (on) {
-        icon.outerHTML = `<div class="fab-spin" id="fab-icon"></div>`;
         txt.textContent = 'Analisi…';
         fab.style.pointerEvents = 'none';
       } else {
-        const sp = document.getElementById('fab-icon');
-        if (sp) sp.outerHTML = `<svg id="fab-icon" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`;
         txt.textContent = 'Analizza di nuovo';
         fab.style.pointerEvents = 'auto';
       }
