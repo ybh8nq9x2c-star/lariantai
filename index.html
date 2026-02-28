@@ -5,23 +5,15 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#000000"/>
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="LariantAI">
   <title>LariantAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
-    :root {
-      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      --accent: #e91e8c;
-      --sand: #d4b89e;
-      --sat: env(safe-area-inset-top, 0px);
-      --sab: env(safe-area-inset-bottom, 0px);
-    }
+    :root { --font: 'Inter', sans-serif; --accent: #e91e8c; --sand: #d4b89e; --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     html, body { height: 100%; overflow: hidden; font-family: var(--font); background: #000; color: #fff; }
     #photo-bg { position: fixed; inset: 0; z-index: 0; background: #111; overflow: hidden; }
-    #photo-bg img, #live-video { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: opacity 0.5s ease; }
+    #photo-bg img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: opacity 0.5s ease; }
     #photo-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.85) 100%); }
     #upload-overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); cursor: pointer; transition: opacity 0.3s; }
     #upload-overlay.hidden { opacity: 0; pointer-events: none; }
@@ -30,67 +22,38 @@
     .ul-ring svg { width: 34px; height: 34px; stroke: #fff; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
     .ul-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
     .ul-sub { font-size: 13px; color: rgba(255,255,255,0.6); text-align: center; line-height: 1.5; }
-    #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.5s cubic-bezier(0.34,1.28,0.64,1); padding-bottom: var(--sab); }
+    #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32,0.72,0,1); padding-bottom: var(--sab); }
     #sheet.visible { transform: translateY(0); }
-    .sheet-inner { background: rgba(22,22,26,0.95); backdrop-filter: blur(60px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.12); border-radius: 28px 28px 0 0; padding: 14px 20px 220px; max-height: 68dvh; overflow-y: auto; overscroll-behavior: contain; box-shadow: 0 -10px 30px rgba(0,0,0,0.6); }
+    .sheet-inner { background: rgba(22,22,26,0.95); backdrop-filter: blur(60px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.12); border-radius: 28px 28px 0 0; padding: 14px 20px 240px; max-height: 68dvh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.7); }
     .handle { width: 36px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 99px; margin: 0 auto 16px; }
     .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
     .sheet-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
     .sheet-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
     .item-list { display: flex; flex-direction: column; gap: 12px; }
-    .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 12px 14px; animation: rowIn 0.4s cubic-bezier(0.34,1.3,0.64,1) both; }
-    @keyframes rowIn { from { opacity:0; transform: translateY(14px) scale(0.97); } to { opacity:1; transform: translateY(0) scale(1); } }
+    .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 12px 14px; }
     .item-thumb { width: 54px; height: 54px; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
     .item-body { flex: 1; min-width: 0; }
     .item-brand { font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
     .item-model { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .item-tipo { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
     .confidence { font-size: 13px; color: #0f0; font-weight: 600; }
-    .buy-btn {
-      flex-shrink: 0;
-      color: #222;
-      font-family: var(--font);
-      font-size: 13px;
-      font-weight: 700;
-      padding: 9px 18px;
-      border-radius: 999px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-      transition: all 0.2s;
-    }
-    #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; }
+    .buy-btn { flex-shrink: 0; color: #222; font-family: var(--font); font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+    #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
     .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
-    #analyze-fab {
-      position: fixed; bottom: calc(var(--sab) + 24px); left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      z-index: 25;
-      border: none;
-      cursor: pointer;
-      font-family: var(--font);
-      font-size: 13.5px;
-      font-weight: 700;
-      padding: 10px 24px;
-      border-radius: 999px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
-      color: #fff;
-      transition: all 0.3s ease;
-    }
+    #analyze-fab { position: fixed; bottom: calc(var(--sab) + 20px); left: 50%; transform: translateX(-50%) translateY(100px); z-index: 25; border: none; cursor: pointer; font-family: var(--font); font-size: 13.5px; font-weight: 700; padding: 10px 24px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); color: #fff; transition: all 0.3s; }
     #analyze-fab.visible { transform: translateX(-50%) translateY(0); }
-    .skeleton { background: rgba(255,255,255,0.08); border-radius: 12px; height: 68px; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 0.6; } 50% { opacity: 1; } }
     .toast { position: fixed; bottom: calc(var(--sab) + 110px); left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(20,20,25,0.92); backdrop-filter: blur(16px); color: #fff; font-size: 13px; padding: 10px 22px; border-radius: 999px; z-index: 99; opacity: 0; transition: all 0.4s; }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   </style>
 </head>
 <body>
   <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
-  <div id="photo-bg">
-    <img id="bg-img" src="" alt="" style="opacity:0"/>
-    <video id="live-video" autoplay playsinline style="display:none"></video>
-  </div>
+  <div id="photo-bg"><img id="bg-img" src="" alt="" style="opacity:0"/></div>
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
     <button class="tb-btn" onclick="showHistory()">📖 Storico</button>
+    <button class="tb-btn" onclick="showCollection()">💾 Collezione</button>
     <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">✎ Cambia</button>
   </div>
   <div id="upload-overlay" onclick="triggerUpload()">
@@ -102,8 +65,8 @@
     <span id="fab-text">Analizza di nuovo</span>
   </button>
   <div id="sheet">
-    <div class="sheet-inner">
-      <div class="handle"></div>
+    <div class="sheet-inner" id="sheet-inner">
+      <div class="handle" id="handle"></div>
       <div class="sheet-head">
         <div><div class="sheet-title">Outfit Detected</div><div class="sheet-sub" id="sheet-sub">— capi identificati</div></div>
         <div class="sheet-star">✦</div>
@@ -118,37 +81,28 @@
     let currentFile = null;
     let isAnalyzing = false;
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
-    let stream = null;
+    let collection = JSON.parse(localStorage.getItem('lariantCollection') || '[]');
+    let startY = 0;
 
-    // Camera Live
-    async function startLiveCamera() {
-      if (stream) return;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        const video = document.getElementById('live-video');
-        video.srcObject = stream;
-        video.style.display = 'block';
-        document.getElementById('bg-img').style.opacity = '0';
-        showToast('📷 Camera live attivata – tocca lo schermo per scattare');
-        video.onclick = captureFromLive;
-      } catch(e) { showToast('❌ Impossibile accedere alla camera'); }
-    }
-
-    function captureFromLive() {
-      const video = document.getElementById('live-video');
-      const canvas = document.createElement('canvas');
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext('2d').drawImage(video, 0, 0);
-      canvas.toBlob(blob => {
-        currentFile = new File([blob], "live.jpg", { type: "image/jpeg" });
-        document.getElementById('bg-img').src = URL.createObjectURL(blob);
-        document.getElementById('bg-img').style.opacity = '1';
-        video.style.display = 'none';
-        stream.getTracks().forEach(t => t.stop());
-        stream = null;
-        showToast('📸 Foto catturata dalla camera live');
-      }, 'image/jpeg', 0.85);
+    // Swipe to close
+    function initSwipe() {
+      const sheet = document.getElementById('sheet');
+      const inner = document.getElementById('sheet-inner');
+      const handle = document.getElementById('handle');
+      handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+      handle.addEventListener('touchmove', e => {
+        const delta = e.touches[0].clientY - startY;
+        if (delta > 0) inner.style.transform = `translateY(${delta}px)`;
+      });
+      handle.addEventListener('touchend', e => {
+        const delta = e.changedTouches[0].clientY - startY;
+        if (delta > 120) {
+          sheet.classList.remove('visible');
+          inner.style.transform = '';
+        } else {
+          inner.style.transform = '';
+        }
+      });
     }
 
     function triggerUpload() {
@@ -201,7 +155,6 @@
       if (!currentFile || isAnalyzing) return;
       isAnalyzing = true;
       setFabLoading(true);
-      showSkeleton();
       try {
         const base64 = await resizeImage(currentFile);
         const res = await fetch('/api/analyze', {
@@ -212,7 +165,6 @@
         const data = await res.json();
         if (data.error) throw new Error(data.error);
         renderSheet(data.items ?? []);
-        saveToHistory(data.items);
         showToast(`✅ ${data.items?.length ?? 0} capi riconosciuti`);
       } catch (err) {
         showToast('❌ ' + (err.message || 'Errore'));
@@ -222,15 +174,12 @@
       }
     }
 
-    function showSkeleton() {
-      const list = document.getElementById('item-list');
-      list.innerHTML = `<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>`;
-      document.getElementById('sheet').classList.add('visible');
-    }
-
     function renderSheet(items) {
       const list = document.getElementById('item-list');
-      list.innerHTML = '';
+      list.innerHTML = `
+        <button onclick="saveCurrentOutfit()" style="width:100%;background:#d4b89e;color:#222;padding:14px;border-radius:16px;font-weight:700;margin-bottom:12px;">💾 Salva Outfit</button>
+        <button onclick="shareOutfit()" style="width:100%;background:#3498db;color:#fff;padding:14px;border-radius:16px;font-weight:700;">📤 Condividi Outfit</button>
+      `;
       items.forEach((item, i) => {
         const colorKey = (item.colore || 'grigio').toLowerCase();
         const itemColor = colorMap[colorKey] || '#d4b89e';
@@ -240,7 +189,6 @@
 
         const row = document.createElement('div');
         row.className = 'item-row';
-        row.style.animationDelay = `${i * 0.07}s`;
         row.innerHTML = `
           <div class="item-thumb">${item.emoji || '👗'}</div>
           <div class="item-body">
@@ -256,29 +204,46 @@
 
       if (items.length > 0) {
         const randomItem = items[Math.floor(Math.random() * items.length)];
-        const randomColorKey = (randomItem.colore || 'grigio').toLowerCase();
-        const randomColor = colorMap[randomColorKey] || '#e91e8c';
+        const randomColor = colorMap[(randomItem.colore || 'grigio').toLowerCase()] || '#e91e8c';
         document.getElementById('analyze-fab').style.backgroundColor = randomColor;
       }
     }
 
-    function saveToHistory(items) {
-      const entry = { date: new Date().toLocaleString('it-IT'), items };
-      history.unshift(entry);
-      if (history.length > 20) history.pop();
-      localStorage.setItem('lariantHistory', JSON.stringify(history));
+    function saveCurrentOutfit() {
+      const items = [...document.querySelectorAll('.item-row')].map(row => ({
+        brand: row.querySelector('.item-brand').textContent,
+        modello: row.querySelector('.item-model').textContent,
+        tipo: row.querySelector('.item-tipo').textContent.split(' • ')[0],
+        colore: row.querySelector('.item-tipo').textContent.split(' • ')[1] || ''
+      }));
+      const name = prompt("Dai un nome a questo outfit (es. Weekend Casual):") || "Outfit " + new Date().toLocaleDateString('it-IT');
+      collection.unshift({ name, date: new Date().toLocaleString('it-IT'), items });
+      localStorage.setItem('lariantCollection', JSON.stringify(collection));
+      showToast('💾 Outfit salvato in Collezione!');
     }
 
-    function showHistory() {
-      if (history.length === 0) return showToast('📭 Nessuna scansione salvata');
-      let html = '<h3 style="margin:15px 0 10px;color:#fff">📖 Storico Scansioni</h3>';
-      history.forEach(entry => {
-        html += `<div style="background:rgba(255,255,255,0.07);padding:12px;border-radius:12px;margin-bottom:8px"><small>${entry.date}</small><br>`;
-        entry.items.forEach(it => html += `• ${it.brand} ${it.modello}<br>`);
+    function showCollection() {
+      let html = '<h3 style="margin:15px 0 10px;color:#fff">💾 La Mia Collezione</h3>';
+      if (collection.length === 0) html += '<p style="text-align:center;color:#666;padding:20px;">Nessun outfit salvato ancora</p>';
+      collection.forEach((outfit, i) => {
+        html += `<div style="background:rgba(255,255,255,0.07);padding:12px;border-radius:12px;margin-bottom:8px"><small>${outfit.date}</small><br><strong>${outfit.name}</strong><br>`;
+        outfit.items.forEach(it => html += `• ${it.brand} ${it.modello}<br>`);
         html += '</div>';
       });
       document.getElementById('item-list').innerHTML = html;
       document.getElementById('sheet').classList.add('visible');
+    }
+
+    function shareOutfit() {
+      const text = "Il mio outfit LariantAI:\n" + Array.from(document.querySelectorAll('.item-row')).map(r => 
+        `• ${r.querySelector('.item-brand').textContent} ${r.querySelector('.item-model').textContent}`
+      ).join('\n');
+      if (navigator.share) {
+        navigator.share({ title: 'Il mio outfit', text });
+      } else {
+        navigator.clipboard.writeText(text);
+        showToast('📋 Outfit copiato negli appunti!');
+      }
     }
 
     function setFabLoading(on) {
@@ -301,6 +266,11 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
     }
+
+    // Inizializza swipe
+    window.onload = () => {
+      initSwipe();
+    };
   </script>
 </body>
 </html>
