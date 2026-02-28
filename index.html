@@ -77,7 +77,7 @@
       -webkit-backdrop-filter: blur(40px) saturate(160%);
       border-top: 1px solid rgba(255,255,255,0.10);
       border-radius: 28px 28px 0 0;
-      padding: 14px 20px 130px;
+      padding: 14px 20px 130px;   /* extra spazio per non coprire gli item */
       max-height: 62dvh;
       overflow-y: auto;
       overscroll-behavior: contain;
@@ -307,7 +307,7 @@
     }
 
     // ══════════════════════════════════════════
-    // RENDER SHEET → LINK DIRETTO ZALANDO
+    // RENDER SHEET → GOOGLE SHOPPING (tutti i siti + prezzo più basso)
     // ══════════════════════════════════════════
     function renderSheet(items) {
       const list = document.getElementById('item-list');
@@ -318,8 +318,7 @@
       items.forEach((item, i) => {
         const searchTerm = `${item.brand !== 'Unknown' ? item.brand + ' ' : ''}${item.modello} ${item.colore || ''}`.trim();
         const q = encodeURIComponent(searchTerm);
-        // 🔥 LINK DIRETTO ZALANDO (con brand + modello + colore)
-        const shopUrl = `https://www.zalando.it/catalog/?q=${q}`;
+        const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
 
         const row = document.createElement('div');
         row.className = 'item-row';
@@ -331,7 +330,7 @@
             <div class="item-model">${item.modello || 'Modello'}</div>
             <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
           </div>
-          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Zalando</a>
+          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>
         `;
         list.appendChild(row);
       });
