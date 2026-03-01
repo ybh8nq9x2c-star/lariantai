@@ -3,86 +3,154 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="theme-color" content="#000000"/>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="LariantAI">
+  <meta name="theme-color" content="#e91e8c"/>
+  <meta name="description" content="LariantAI – Scatta una foto al tuo outfit e scopri ogni capo, brand e dove comprarlo."/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="LariantAI"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="apple-touch-icon" href="/icons/icon-192.png"/>
   <title>LariantAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <!-- Plausible Analytics – cookieless, GDPR compliant -->
+  <script defer data-domain="lariantai.com" src="https://plausible.io/js/script.js"></script>
   <style>
-    :root { --font: 'Inter', sans-serif; --accent: #e91e8c; --sand: #d4b89e; --sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    html, body { height: 100%; overflow: hidden; font-family: var(--font); background: #000; color: #fff; }
-    #photo-bg { position: fixed; inset: 0; z-index: 0; background: #111; overflow: hidden; }
-    #photo-bg img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; transition: opacity 0.5s ease; }
-    #photo-bg::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.2) 55%, rgba(0,0,0,0.85) 100%); }
-    #upload-overlay { position: fixed; inset: 0; z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 32px; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); cursor: pointer; }
-    #upload-overlay.hidden { opacity: 0; pointer-events: none; }
-    .ul-ring { width: 88px; height: 88px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; }
-    #sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.32,0.72,0,1); padding-bottom: var(--sab); }
-    #sheet.visible { transform: translateY(0); }
-    .sheet-inner { background: rgba(22,22,26,0.95); backdrop-filter: blur(60px) saturate(180%); border-top: 1px solid rgba(255,255,255,0.12); border-radius: 28px 28px 0 0; padding: 14px 20px 240px; max-height: 68dvh; overflow-y: auto; box-shadow: 0 -10px 40px rgba(0,0,0,0.7); }
-    .handle { width: 36px; height: 4px; background: rgba(255,255,255,0.25); border-radius: 99px; margin: 0 auto 16px; }
-    .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
-    .sheet-title { font-size: 20px; font-weight: 800; letter-spacing: -0.4px; }
-    .sheet-sub { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 3px; }
-    .item-list { display: flex; flex-direction: column; gap: 12px; }
-    .item-row { display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.09); border-radius: 18px; padding: 12px 14px; }
-    .item-thumb { width: 54px; height: 54px; border-radius: 12px; background: rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
-    .item-body { flex: 1; min-width: 0; }
-    .item-brand { font-size: 10px; font-weight: 700; letter-spacing: 1.1px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 3px; }
-    .item-model { font-size: 15px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .item-tipo { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 2px; }
-    .confidence { font-size: 13px; color: #0f0; font-weight: 600; }
-    .buy-btn { flex-shrink: 0; background: var(--sand); color: #222; font-family: var(--font); font-size: 13px; font-weight: 700; padding: 9px 18px; border-radius: 999px; box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
-    #topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding: calc(var(--sat) + 14px) 20px 14px; display: flex; align-items: center; justify-content: space-between; }
-    .tb-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.4px; color: #fff; }
-    .tb-btn { background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; padding: 7px 16px; border-radius: 999px; cursor: pointer; }
-    #analyze-fab { position: fixed; bottom: calc(var(--sab) + 24px); left: 50%; transform: translateX(-50%) translateY(100px); z-index: 25; background: var(--accent); color: #fff; border: none; cursor: pointer; font-family: var(--font); font-size: 13.5px; font-weight: 700; padding: 10px 24px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); }
-    #analyze-fab.visible { transform: translateX(-50%) translateY(0); }
-    .toast { position: fixed; bottom: calc(var(--sab) + 110px); left: 50%; transform: translateX(-50%) translateY(40px); background: rgba(20,20,25,0.92); backdrop-filter: blur(16px); color: #fff; font-size: 13px; padding: 10px 22px; border-radius: 999px; z-index: 99; opacity: 0; transition: all 0.4s; }
-    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    :root{--font:'Inter',sans-serif;--accent:#e91e8c;--sand:#d4b89e;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden;font-family:var(--font);background:#000;color:#fff}
+    #photo-bg{position:fixed;inset:0;z-index:0;background:#111;overflow:hidden}
+    #photo-bg img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:opacity .5s ease}
+    #photo-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,.2) 55%,rgba(0,0,0,.85) 100%)}
+    #upload-overlay{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:32px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);cursor:pointer;transition:opacity .3s}
+    #upload-overlay.hidden{opacity:0;pointer-events:none}
+    .ul-ring{width:88px;height:88px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
+    .ul-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
+    .ul-sub{font-size:14px;color:rgba(255,255,255,.55);text-align:center;line-height:1.5}
+    #sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);padding-bottom:var(--sab)}
+    #sheet.visible{transform:translateY(0)}
+    .sheet-inner{background:rgba(22,22,26,.95);backdrop-filter:blur(60px) saturate(180%);border-top:1px solid rgba(255,255,255,.12);border-radius:28px 28px 0 0;padding:14px 20px 240px;max-height:68dvh;overflow-y:auto;box-shadow:0 -10px 40px rgba(0,0,0,.7)}
+    .handle{width:36px;height:4px;background:rgba(255,255,255,.25);border-radius:99px;margin:0 auto 16px;cursor:grab}
+    .sheet-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
+    .sheet-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
+    .sheet-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:3px}
+    .item-list{display:flex;flex-direction:column;gap:12px}
+    .item-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px 14px}
+    .item-thumb{width:54px;height:54px;border-radius:12px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+    .item-body{flex:1;min-width:0}
+    .item-brand{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+    .item-model{font-size:15px;font-weight:700;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .item-tipo{font-size:12px;color:rgba(255,255,255,.45);margin-top:2px}
+    .confidence{font-size:13px;color:#0f0;font-weight:600}
+    .buy-btn{flex-shrink:0;background:var(--sand);color:#222;font-family:var(--font);font-size:13px;font-weight:700;padding:9px 18px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.3);text-decoration:none;display:inline-block}
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:30;padding:calc(var(--sat) + 14px) 20px 14px;display:flex;align-items:center;gap:8px}
+    .tb-logo{font-size:17px;font-weight:800;letter-spacing:-.4px;color:#fff;margin-right:auto}
+    .tb-btn{background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+    #analyze-fab{position:fixed;bottom:calc(var(--sab) + 24px);left:50%;transform:translateX(-50%) translateY(100px);z-index:25;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:var(--font);font-size:13.5px;font-weight:700;padding:10px 24px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+    #analyze-fab.visible{transform:translateX(-50%) translateY(0)}
+    .toast{position:fixed;bottom:calc(var(--sab) + 110px);left:50%;transform:translateX(-50%) translateY(40px);background:rgba(20,20,25,.92);backdrop-filter:blur(16px);color:#fff;font-size:13px;padding:10px 22px;border-radius:999px;z-index:99;opacity:0;transition:all .4s;white-space:nowrap}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    /* Skeleton loading */
+    .skeleton-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px 14px}
+    .skel{background:rgba(255,255,255,.12);border-radius:8px;animation:pulse 1.4s ease-in-out infinite}
+    .skel-thumb{width:54px;height:54px;border-radius:12px;flex-shrink:0}
+    .skel-body{flex:1;display:flex;flex-direction:column;gap:6px}
+    .skel-line{height:10px}.skel-line.short{width:40%}.skel-line.mid{width:65%}.skel-line.full{width:90%}
+    .skel-btn{width:72px;height:36px;border-radius:999px;flex-shrink:0}
+    @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+    /* Cookie banner */
+    #cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(15,15,20,.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.12);padding:16px 20px calc(var(--sab) + 16px);display:flex;flex-direction:column;gap:10px;transition:transform .4s}
+    #cookie-banner.hidden{transform:translateY(110%)}
+    .cb-text{font-size:12px;color:rgba(255,255,255,.7);line-height:1.5}
+    .cb-text a{color:var(--sand);text-decoration:underline}
+    .cb-btns{display:flex;gap:8px}
+    .cb-accept{flex:1;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--font)}
+    .cb-decline{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:10px;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:var(--font)}
+    /* History/Collection outfit card */
+    .outfit-card{background:rgba(255,255,255,.07);padding:14px;border-radius:16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.09)}
+    .outfit-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+    .outfit-card-title{font-size:15px;font-weight:700}
+    .outfit-card-date{font-size:11px;color:rgba(255,255,255,.4)}
+    .outfit-card-items{font-size:12px;color:rgba(255,255,255,.55);line-height:1.6}
+    .delete-btn{background:rgba(255,60,60,.2);border:1px solid rgba(255,60,60,.3);color:#ff6b6b;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .empty-state{text-align:center;color:rgba(255,255,255,.35);padding:40px 20px;font-size:14px}
   </style>
 </head>
 <body>
   <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
   <div id="photo-bg"><img id="bg-img" src="" alt="" style="opacity:0"/></div>
+
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
     <button class="tb-btn" onclick="showHistory()">📖 Storico</button>
     <button class="tb-btn" onclick="showCollection()">💾 Collezione</button>
     <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">✎ Cambia</button>
   </div>
+
   <div id="upload-overlay" onclick="triggerUpload()">
-    <div class="ul-ring"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+    <div class="ul-ring">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5">
+        <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+    </div>
     <div class="ul-title">Fotografa il tuo outfit</div>
     <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio.</div>
   </div>
+
   <button id="analyze-fab" onclick="analyzeImage()">
-    <span id="fab-text">Analizza di nuovo</span>
+    <span id="fab-text">✦ Analizza outfit</span>
   </button>
+
   <div id="sheet">
     <div class="sheet-inner" id="sheet-inner">
       <div class="handle" id="handle"></div>
       <div class="sheet-head">
-        <div><div class="sheet-title">Outfit Detected</div><div class="sheet-sub" id="sheet-sub">— capi identificati</div></div>
+        <div><div class="sheet-title" id="sheet-title">Outfit Detected</div><div class="sheet-sub" id="sheet-sub">— capi identificati</div></div>
         <div class="sheet-star">✦</div>
       </div>
       <div id="item-list" class="item-list"></div>
     </div>
   </div>
+
   <div class="toast" id="toast"></div>
 
+  <!-- Cookie / Privacy Banner -->
+  <div id="cookie-banner">
+    <div class="cb-text">
+      🍪 Usiamo analisi anonime (Plausible, no cookie) per migliorare l'app.
+      Nessun dato personale viene venduto. <a href="/privacy.html" target="_blank">Privacy Policy</a>
+    </div>
+    <div class="cb-btns">
+      <button class="cb-accept" onclick="acceptCookies()">Accetto</button>
+      <button class="cb-decline" onclick="declineCookies()">Solo essenziali</button>
+    </div>
+  </div>
+
   <script>
+    // ── State ────────────────────────────────────────────────────────────────
     let currentFile = null;
     let isAnalyzing = false;
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
     let collection = JSON.parse(localStorage.getItem('lariantCollection') || '[]');
     let startY = 0;
-    let dailyScans = JSON.parse(localStorage.getItem('dailyScans') || '0');
-    const today = new Date().toDateString();
+    let lastItems = [];
 
-    // Swipe to close (Punto 5)
+    // ── Cookie Banner ────────────────────────────────────────────────────────
+    (function initCookieBanner() {
+      const consent = localStorage.getItem('lariantCookieConsent');
+      if (consent) document.getElementById('cookie-banner').classList.add('hidden');
+    })();
+    function acceptCookies() {
+      localStorage.setItem('lariantCookieConsent', 'accepted');
+      document.getElementById('cookie-banner').classList.add('hidden');
+    }
+    function declineCookies() {
+      localStorage.setItem('lariantCookieConsent', 'declined');
+      document.getElementById('cookie-banner').classList.add('hidden');
+    }
+
+    // ── Swipe to close ───────────────────────────────────────────────────────
     function initSwipe() {
       const inner = document.getElementById('sheet-inner');
       const handle = document.getElementById('handle');
@@ -93,11 +161,16 @@
       });
       handle.addEventListener('touchend', e => {
         const delta = e.changedTouches[0].clientY - startY;
-        if (delta > 120) document.getElementById('sheet').classList.remove('visible');
-        inner.style.transform = '';
+        if (delta > 120) {
+          document.getElementById('sheet').classList.remove('visible');
+          inner.style.transform = '';
+        } else {
+          inner.style.transform = '';
+        }
       });
     }
 
+    // ── Upload ───────────────────────────────────────────────────────────────
     function triggerUpload() {
       if (isAnalyzing) return;
       document.getElementById('file-input').click();
@@ -116,21 +189,22 @@
         document.getElementById('change-btn').style.display = 'block';
         document.getElementById('sheet').classList.remove('visible');
         document.getElementById('item-list').innerHTML = '';
-        showToast('📸 Foto caricata');
+        showToast('📸 Foto caricata — premi Analizza');
       };
       reader.readAsDataURL(file);
     });
 
+    // ── Image resize ─────────────────────────────────────────────────────────
     async function resizeImage(file) {
       return new Promise(resolve => {
         const img = new Image();
         img.onload = () => {
           const canvas = document.createElement('canvas');
-          let {width, height} = img;
+          let { width, height } = img;
           const MAX = 768;
           if (width > MAX || height > MAX) {
-            if (width > height) height = Math.round(height * MAX / width), width = MAX;
-            else width = Math.round(width * MAX / height), height = MAX;
+            if (width > height) { height = Math.round(height * MAX / width); width = MAX; }
+            else { width = Math.round(width * MAX / height); height = MAX; }
           }
           canvas.width = width; canvas.height = height;
           canvas.getContext('2d').drawImage(img, 0, 0, width, height);
@@ -144,10 +218,31 @@
       });
     }
 
+    // ── Skeleton loading ─────────────────────────────────────────────────────
+    function showSkeleton() {
+      const list = document.getElementById('item-list');
+      list.innerHTML = [1,2,3].map(() => `
+        <div class="skeleton-row">
+          <div class="skel skel-thumb"></div>
+          <div class="skel-body">
+            <div class="skel skel-line short"></div>
+            <div class="skel skel-line full"></div>
+            <div class="skel skel-line mid"></div>
+          </div>
+          <div class="skel skel-btn"></div>
+        </div>`).join('');
+      document.getElementById('sheet-title').textContent = 'Analizzando…';
+      document.getElementById('sheet-sub').textContent = 'Gemini sta leggendo il tuo outfit';
+      document.getElementById('sheet').classList.add('visible');
+    }
+
+    // ── Analyze ──────────────────────────────────────────────────────────────
     async function analyzeImage() {
       if (!currentFile || isAnalyzing) return;
       isAnalyzing = true;
       setFabLoading(true);
+      showSkeleton();
+
       try {
         const base64 = await resizeImage(currentFile);
         const res = await fetch('/api/analyze', {
@@ -155,28 +250,46 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64, mimeType: 'image/jpeg' })
         });
+
         const data = await res.json();
-        if (data.error) throw new Error(data.error);
-        renderSheet(data.items ?? []);
-        document.getElementById('sheet').classList.add('visible');
-        showToast(`✅ ${data.items?.length ?? 0} capi riconosciuti`);
+        if (!res.ok || data.error) throw new Error(data.error || `Errore ${res.status}`);
+
+        lastItems = data.items ?? [];
+        renderSheet(lastItems);
+
+        // Salva in history automaticamente
+        history.unshift({
+          date: new Date().toLocaleString('it-IT'),
+          items: lastItems,
+          thumb: null
+        });
+        if (history.length > 50) history.pop();
+        localStorage.setItem('lariantHistory', JSON.stringify(history));
+
+        showToast(`✅ ${lastItems.length} capi riconosciuti`);
       } catch (err) {
-        showToast('❌ ' + (err.message || 'Errore'));
+        document.getElementById('sheet').classList.remove('visible');
+        showToast('❌ ' + (err.message || 'Errore imprevisto'));
       } finally {
         isAnalyzing = false;
         setFabLoading(false);
       }
     }
 
+    // ── Render results ───────────────────────────────────────────────────────
     function renderSheet(items) {
       const list = document.getElementById('item-list');
+      document.getElementById('sheet-title').textContent = 'Outfit Detected';
+      document.getElementById('sheet-sub').textContent = `${items.length} capi identificati`;
+
       list.innerHTML = `
-        <button onclick="saveCurrentOutfit()" style="width:100%;background:#d4b89e;color:#222;padding:14px;border-radius:16px;font-weight:700;margin-bottom:8px;">💾 Salva Outfit</button>
-        <button onclick="shareOutfit()" style="width:100%;background:#3498db;color:#fff;padding:14px;border-radius:16px;font-weight:700;">📤 Condividi Outfit</button>
-      `;
-      items.forEach((item, i) => {
-        const searchTerm = `${item.brand} ${item.modello} ${item.colore || ''}`.trim();
-        const q = encodeURIComponent(searchTerm);
+        <div style="display:flex;gap:8px;margin-bottom:4px">
+          <button onclick="saveCurrentOutfit()" style="flex:1;background:#d4b89e;color:#222;padding:13px;border-radius:16px;font-weight:700;font-size:13px;border:none;cursor:pointer;font-family:var(--font)">💾 Salva Outfit</button>
+          <button onclick="shareOutfit()" style="flex:1;background:#3498db;color:#fff;padding:13px;border-radius:16px;font-weight:700;font-size:13px;border:none;cursor:pointer;font-family:var(--font)">📤 Condividi</button>
+        </div>`;
+
+      items.forEach(item => {
+        const q = encodeURIComponent(`${item.brand} ${item.modello} ${item.colore || ''}`.trim());
         const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
         const row = document.createElement('div');
         row.className = 'item-row';
@@ -186,62 +299,100 @@
             <div class="item-brand">${item.brand || 'Brand'}</div>
             <div class="item-model">${item.modello || 'Modello'}</div>
             <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
-            <div class="confidence">Confidence: ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
+            <div class="confidence">⚡ ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
           </div>
-          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>
-        `;
+          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>`;
         list.appendChild(row);
       });
     }
 
+    // ── Save outfit ───────────────────────────────────────────────────────────
     function saveCurrentOutfit() {
-      const items = Array.from(document.querySelectorAll('.item-row')).map(row => ({
-        brand: row.querySelector('.item-brand').textContent,
-        modello: row.querySelector('.item-model').textContent,
-        tipo: row.querySelector('.item-tipo').textContent.split(' • ')[0]
-      }));
-      const name = prompt("Dai un nome a questo outfit (es. Weekend Casual):") || "Outfit " + new Date().toLocaleDateString('it-IT');
-      collection.unshift({ name, date: new Date().toLocaleString('it-IT'), items });
+      if (!lastItems.length) { showToast('⚠️ Nessun outfit da salvare'); return; }
+      const name = prompt('Dai un nome a questo outfit:') || 'Outfit ' + new Date().toLocaleDateString('it-IT');
+      collection.unshift({ id: Date.now(), name, date: new Date().toLocaleString('it-IT'), items: lastItems });
       localStorage.setItem('lariantCollection', JSON.stringify(collection));
-      showToast('💾 Outfit salvato in Collezione!');
+      showToast('💾 Outfit salvato!');
     }
 
-    function showCollection() {
-      let html = '<h3 style="margin:15px 0 10px;color:#fff">💾 La Mia Collezione</h3>';
-      if (collection.length === 0) html += '<p style="text-align:center;color:#666;padding:20px;">Nessun outfit salvato ancora</p>';
-      collection.forEach(outfit => {
-        html += `<div style="background:rgba(255,255,255,0.07);padding:12px;border-radius:12px;margin-bottom:8px"><small>${outfit.date}</small><br><strong>${outfit.name}</strong><br>`;
-        outfit.items.forEach(it => html += `• ${it.brand} ${it.modello}<br>`);
-        html += '</div>';
-      });
-      document.getElementById('item-list').innerHTML = html;
+    // ── History ───────────────────────────────────────────────────────────────
+    function showHistory() {
+      document.getElementById('sheet-title').textContent = '📖 Storico Scan';
+      document.getElementById('sheet-sub').textContent = `${history.length} scansioni effettuate`;
+      const list = document.getElementById('item-list');
+
+      if (history.length === 0) {
+        list.innerHTML = '<div class="empty-state">📷 Nessuna scansione ancora.<br>Carica una foto e analizza il tuo outfit!</div>';
+      } else {
+        list.innerHTML = history.map((h, i) => `
+          <div class="outfit-card">
+            <div class="outfit-card-head">
+              <div>
+                <div class="outfit-card-title">Scansione ${history.length - i}</div>
+                <div class="outfit-card-date">${h.date}</div>
+              </div>
+            </div>
+            <div class="outfit-card-items">${(h.items||[]).map(it => `• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
+          </div>`).join('');
+      }
       document.getElementById('sheet').classList.add('visible');
     }
 
+    // ── Collection ────────────────────────────────────────────────────────────
+    function showCollection() {
+      document.getElementById('sheet-title').textContent = '💾 La Mia Collezione';
+      document.getElementById('sheet-sub').textContent = `${collection.length} outfit salvati`;
+      const list = document.getElementById('item-list');
+
+      if (collection.length === 0) {
+        list.innerHTML = '<div class="empty-state">💾 Nessun outfit salvato ancora.<br>Analizza un outfit e premi "Salva"!</div>';
+      } else {
+        list.innerHTML = collection.map(outfit => `
+          <div class="outfit-card" id="outfit-${outfit.id}">
+            <div class="outfit-card-head">
+              <div>
+                <div class="outfit-card-title">${outfit.name}</div>
+                <div class="outfit-card-date">${outfit.date}</div>
+              </div>
+              <button class="delete-btn" onclick="deleteOutfit(${outfit.id})">🗑 Elimina</button>
+            </div>
+            <div class="outfit-card-items">${(outfit.items||[]).map(it => `• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
+          </div>`).join('');
+      }
+      document.getElementById('sheet').classList.add('visible');
+    }
+
+    function deleteOutfit(id) {
+      if (!confirm('Eliminare questo outfit dalla collezione?')) return;
+      collection = collection.filter(o => o.id !== id);
+      localStorage.setItem('lariantCollection', JSON.stringify(collection));
+      document.getElementById(`outfit-${id}`)?.remove();
+      document.getElementById('sheet-sub').textContent = `${collection.length} outfit salvati`;
+      showToast('🗑 Outfit eliminato');
+    }
+
+    // ── Share ─────────────────────────────────────────────────────────────────
     function shareOutfit() {
-      const text = "Il mio outfit LariantAI:\n" + Array.from(document.querySelectorAll('.item-row')).map(r => 
-        `• ${r.querySelector('.item-brand').textContent} ${r.querySelector('.item-model').textContent}`
-      ).join('\n');
+      const text = '🌟 Il mio outfit analizzato con LariantAI:\n' +
+        lastItems.map(it => `• ${it.emoji||''} ${it.brand} ${it.modello} (~€${it.prezzo_stimato||'?'})`).join('\n') +
+        '\n\nScopri il tuo outfit → lariantai.com';
       if (navigator.share) {
-        navigator.share({ title: 'Il mio outfit', text });
+        navigator.share({ title: 'Il mio outfit – LariantAI', text });
       } else {
         navigator.clipboard.writeText(text);
-        showToast('📋 Outfit copiato negli appunti!');
+        showToast('📋 Copiato negli appunti!');
       }
     }
 
+    // ── FAB loading ───────────────────────────────────────────────────────────
     function setFabLoading(on) {
       const fab = document.getElementById('analyze-fab');
       const txt = document.getElementById('fab-text');
-      if (on) {
-        txt.textContent = 'Analisi…';
-        fab.style.pointerEvents = 'none';
-      } else {
-        txt.textContent = 'Analizza di nuovo';
-        fab.style.pointerEvents = 'auto';
-      }
+      fab.style.pointerEvents = on ? 'none' : 'auto';
+      txt.textContent = on ? '⏳ Analisi in corso…' : '✦ Analizza outfit';
     }
 
+    // ── Toast ─────────────────────────────────────────────────────────────────
     let toastTimer;
     function showToast(msg) {
       const t = document.getElementById('toast');
@@ -251,7 +402,6 @@
       toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    // Inizializza swipe
     window.onload = initSwipe;
   </script>
 </body>
