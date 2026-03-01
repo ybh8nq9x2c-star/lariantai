@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#000000"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="LariantAI">
   <title>LariantAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -77,6 +79,8 @@
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
     let collection = JSON.parse(localStorage.getItem('lariantCollection') || '[]');
     let startY = 0;
+    let dailyScans = JSON.parse(localStorage.getItem('dailyScans') || '0');
+    const today = new Date().toDateString();
 
     // Swipe to close (Punto 5)
     function initSwipe() {
@@ -89,12 +93,8 @@
       });
       handle.addEventListener('touchend', e => {
         const delta = e.changedTouches[0].clientY - startY;
-        if (delta > 120) {
-          document.getElementById('sheet').classList.remove('visible');
-          inner.style.transform = '';
-        } else {
-          inner.style.transform = '';
-        }
+        if (delta > 120) document.getElementById('sheet').classList.remove('visible');
+        inner.style.transform = '';
       });
     }
 
@@ -251,7 +251,7 @@
       toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
     }
 
-    // Inizializza swipe (punto 5)
+    // Inizializza swipe
     window.onload = initSwipe;
   </script>
 </body>
