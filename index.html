@@ -4,7 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <meta name="theme-color" content="#e91e8c"/>
-  <meta name="description" content="LariantAI – Scatta una foto al tuo outfit e scopri ogni capo, brand e dove comprarlo."/>
+  <meta name="description" content="LariantAI – Scatta una foto al tuo outfit e scopri ogni capo, brand e il sito dove costa meno."/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="LariantAI"/>
@@ -78,7 +78,7 @@
 </head>
 <body>
   <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
-  <div id="photo-bg"><img id="bg-img" src="" alt="" style="opacity:0"/></div>
+  <div id="photo-bg"><img id="bg-img" src="" alt="Anteprima outfit" style="opacity:0"/></div>
 
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
@@ -87,7 +87,7 @@
     <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">✎ Cambia</button>
   </div>
 
-  <div id="upload-overlay" onclick="triggerUpload()">
+  <div id="upload-overlay" onclick="triggerUpload()" role="button" aria-label="Carica una foto del tuo outfit">
     <div class="ul-ring">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5">
         <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/>
@@ -95,7 +95,10 @@
       </svg>
     </div>
     <div class="ul-title">Fotografa il tuo outfit</div>
-    <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio.</div>
+    <div class="ul-sub">
+      Scatta una foto o scegli dalla galleria.<br>
+      Riconosce ogni capo, scarpa e accessorio e trova dove costa meno.
+    </div>
   </div>
 
   <button id="analyze-fab" onclick="analyzeImage()">
@@ -106,7 +109,10 @@
     <div class="sheet-inner" id="sheet-inner">
       <div class="handle" id="handle"></div>
       <div class="sheet-head">
-        <div><div class="sheet-title" id="sheet-title">Outfit Detected</div><div class="sheet-sub" id="sheet-sub">— capi identificati</div></div>
+        <div>
+          <div class="sheet-title" id="sheet-title">Outfit Detected</div>
+          <div class="sheet-sub" id="sheet-sub">— capi identificati</div>
+        </div>
         <div class="sheet-star">✦</div>
       </div>
       <div id="item-list" class="item-list"></div>
@@ -135,6 +141,13 @@
     let collection = JSON.parse(localStorage.getItem('lariantCollection') || '[]');
     let startY = 0;
     let lastItems = [];
+
+    // ── Service Worker registration ──────────────────────────────────────────
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(console.error);
+      });
+    }
 
     // ── Cookie Banner ────────────────────────────────────────────────────────
     (function initCookieBanner() {
@@ -257,7 +270,6 @@
         lastItems = data.items ?? [];
         renderSheet(lastItems);
 
-        // Salva in history automaticamente
         history.unshift({
           date: new Date().toLocaleString('it-IT'),
           items: lastItems,
@@ -289,8 +301,16 @@
         </div>`;
 
       items.forEach(item => {
-        const q = encodeURIComponent(`${item.brand} ${item.modello} ${item.colore || ''}`.trim());
-        const shopUrl = `https://www.google.com/search?tbm=shop&q=${q}&hl=it&gl=it`;
+        const genericQuery = encodeURIComponent(`${item.brand || ''} ${item.modello || ''} ${item.colore || ''}`.trim());
+        const fallbackUrl = `https://www.google.com/search?tbm=shop&q=${genericQuery}&hl=it&gl=it`;
+
+        const shopUrl = item.best_offer_url || fallbackUrl;
+        const priceLabel = item.best_price
+          ? `da ~€${item.best_price.toFixed(2)}`
+          : `~€${item.prezzo_stimato || '?'}`;
+
+        const sellerLabel = item.best_seller ? ` • ${item.best_seller}` : '';
+
         const row = document.createElement('div');
         row.className = 'item-row';
         row.innerHTML = `
@@ -299,11 +319,13 @@
             <div class="item-brand">${item.brand || 'Brand'}</div>
             <div class="item-model">${item.modello || 'Modello'}</div>
             <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
-            <div class="confidence">⚡ ${item.confidence || 85}% • ~€${item.prezzo_stimato || '?'}</div>
+            <div class="confidence">⚡ ${item.confidence || 85}% • ${priceLabel}${sellerLabel}</div>
           </div>
           <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>`;
         list.appendChild(row);
       });
+
+      document.getElementById('sheet').classList.add('visible');
     }
 
     // ── Save outfit ───────────────────────────────────────────────────────────
@@ -374,8 +396,8 @@
     // ── Share ─────────────────────────────────────────────────────────────────
     function shareOutfit() {
       const text = '🌟 Il mio outfit analizzato con LariantAI:\n' +
-        lastItems.map(it => `• ${it.emoji||''} ${it.brand} ${it.modello} (~€${it.prezzo_stimato||'?'})`).join('\n') +
-        '\n\nScopri il tuo outfit → lariantai.com';
+        lastItems.map(it => `• ${it.emoji||''} ${it.brand} ${it.modello} (${it.colore||''})`).join('\n') +
+        '\n\nScopri il tuo outfit → https://lariantai.com';
       if (navigator.share) {
         navigator.share({ title: 'Il mio outfit – LariantAI', text });
       } else {
