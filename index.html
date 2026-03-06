@@ -9,18 +9,19 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="LariantAI"/>
   <link rel="manifest" href="/manifest.json"/>
-  <link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png"/>
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167.png"/>
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png"/>
   <title>LariantAI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <!-- Plausible Analytics – cookieless, GDPR compliant -->
   <script defer data-domain="lariantai.com" src="https://plausible.io/js/script.js"></script>
   <style>
-    /* ── Reset & Base ──────────────────────────────────────────────────── */
     :root{
       --font:'Inter',sans-serif;
       --bg:#0f1114;
-      --bg-soft:#15181d;
       --panel:rgba(20,22,27,.94);
       --panel-2:rgba(255,255,255,.06);
       --line:rgba(255,255,255,.10);
@@ -33,218 +34,59 @@
       --sat:env(safe-area-inset-top,0px);
       --sab:env(safe-area-inset-bottom,0px)
     }
-
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+    html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text)}
 
-    html,body{
-      height:100%;
-      overflow:hidden;
-      font-family:var(--font);
-      background:var(--bg);
-      color:var(--text)
-    }
-
-    /* ── Photo background ──────────────────────────────────────────────── */
     #photo-bg{position:fixed;inset:0;z-index:0;background:#111;overflow:hidden}
     #photo-bg img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:opacity .5s ease}
-    #photo-bg::after{
-      content:'';
-      position:absolute;
-      inset:0;
-      background:linear-gradient(to bottom,transparent 28%,rgba(10,10,12,.20) 52%,rgba(10,10,12,.88) 100%)
-    }
+    #photo-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 28%,rgba(10,10,12,.20) 52%,rgba(10,10,12,.88) 100%)}
 
-    /* ── Upload overlay ───────────────────────────────────────────────── */
-    #upload-overlay{
-      position:fixed;inset:0;z-index:10;
-      display:flex;flex-direction:column;align-items:center;justify-content:center;
-      gap:18px;padding:32px;
-      background:rgba(0,0,0,.55);
-      backdrop-filter:blur(6px);
-      cursor:pointer;
-      transition:opacity .3s
-    }
+    #upload-overlay{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:32px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);cursor:pointer;transition:opacity .3s}
     #upload-overlay.hidden{opacity:0;pointer-events:none}
-    .ul-ring{
-      width:88px;height:88px;border-radius:50%;
-      border:2px solid rgba(255,255,255,.25);
-      background:rgba(255,255,255,.06);
-      display:flex;align-items:center;justify-content:center
-    }
+    .ul-ring{width:88px;height:88px;border-radius:50%;border:2px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center}
     .ul-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
     .ul-sub{font-size:14px;color:rgba(255,255,255,.52);text-align:center;line-height:1.5}
 
-    /* ── Topbar ───────────────────────────────────────────────────────── */
-    #topbar{
-      position:fixed;
-      top:0;left:0;right:0;
-      z-index:30;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:calc(var(--sat) + 12px) 14px 10px;
-      overflow-x:auto;
-      scrollbar-width:none;
-      -ms-overflow-style:none;
-    }
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:30;display:flex;align-items:center;gap:10px;padding:calc(var(--sat) + 12px) 14px 10px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none}
     #topbar::-webkit-scrollbar{display:none}
-
-    .tb-logo{
-      flex:0 0 auto;
-      font-size:17px;
-      font-weight:800;
-      letter-spacing:-.4px;
-      color:#fff;
-      margin-right:2px;
-    }
-
-    .tb-actions{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      min-width:max-content;
-    }
-
-    .tb-btn{
-      flex:0 0 auto;
-      background:rgba(255,255,255,.10);
-      backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,.14);
-      color:rgba(255,255,255,.92);
-      font-size:12px;
-      font-weight:650;
-      padding:9px 13px;
-      border-radius:999px;
-      cursor:pointer;
-      white-space:nowrap;
-      font-family:var(--font);
-      transition:background .15s
-    }
+    .tb-logo{flex:0 0 auto;font-size:17px;font-weight:800;letter-spacing:-.4px;color:#fff;margin-right:2px}
+    .tb-actions{display:flex;align-items:center;gap:8px;min-width:max-content}
+    .tb-btn{flex:0 0 auto;background:rgba(255,255,255,.10);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.14);color:rgba(255,255,255,.92);font-size:12px;font-weight:650;padding:9px 13px;border-radius:999px;cursor:pointer;white-space:nowrap;font-family:var(--font);transition:background .15s}
     .tb-btn:hover{background:rgba(255,255,255,.16)}
     .tb-btn:active{transform:translateY(1px)}
 
-    /* ── Sheet ────────────────────────────────────────────────────────── */
-    #sheet{
-      position:fixed;left:0;right:0;bottom:0;
-      z-index:20;
-      transform:translateY(100%);
-      transition:transform .4s cubic-bezier(.32,.72,0,1);
-      padding-bottom:var(--sab)
-    }
+    #sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);padding-bottom:var(--sab)}
     #sheet.visible{transform:translateY(0)}
-
-    .sheet-inner{
-      background:var(--panel);
-      backdrop-filter:blur(44px) saturate(160%);
-      border-top:1px solid var(--line);
-      border-radius:28px 28px 0 0;
-      padding:14px 18px 240px;
-      max-height:68dvh;
-      overflow-y:auto;
-      box-shadow:0 -10px 40px rgba(0,0,0,.7)
-    }
-
+    .sheet-inner{background:var(--panel);backdrop-filter:blur(44px) saturate(160%);border-top:1px solid var(--line);border-radius:28px 28px 0 0;padding:14px 18px 240px;max-height:68dvh;overflow-y:auto;box-shadow:0 -10px 40px rgba(0,0,0,.7)}
     .handle{width:36px;height:4px;background:rgba(255,255,255,.22);border-radius:99px;margin:0 auto 16px;cursor:grab}
     .sheet-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
     .sheet-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
     .sheet-sub{font-size:13px;color:var(--muted);margin-top:3px}
     .item-list{display:flex;flex-direction:column;gap:12px}
 
-    .item-row{
-      display:flex;align-items:center;gap:12px;
-      background:var(--panel-2);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:18px;
-      padding:12px 14px
-    }
-    .item-thumb{
-      width:54px;height:54px;border-radius:12px;
-      background:rgba(255,255,255,.07);
-      display:flex;align-items:center;justify-content:center;
-      font-size:28px;flex-shrink:0
-    }
+    .item-row{display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px 14px}
+    .item-thumb{width:54px;height:54px;border-radius:12px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
     .item-body{flex:1;min-width:0}
     .item-brand{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:3px}
     .item-model{font-size:15px;font-weight:700;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .item-tipo{font-size:12px;color:var(--muted);margin-top:2px}
     .confidence{font-size:13px;color:var(--success);font-weight:700}
-
-    .buy-btn{
-      flex-shrink:0;
-      background:var(--primary);
-      color:var(--primary-text);
-      font-family:var(--font);
-      font-size:13px;
-      font-weight:800;
-      padding:10px 18px;
-      border-radius:999px;
-      box-shadow:none;
-      text-decoration:none;
-      display:inline-block;
-      border:1px solid rgba(0,0,0,.04);
-      transition:background .15s
-    }
+    .buy-btn{flex-shrink:0;background:var(--primary);color:var(--primary-text);font-family:var(--font);font-size:13px;font-weight:800;padding:10px 18px;border-radius:999px;text-decoration:none;display:inline-block;border:1px solid rgba(0,0,0,.04);transition:background .15s}
     .buy-btn:hover{background:var(--primary-strong)}
 
-    /* ── Sheet action buttons ─────────────────────────────────────────── */
     .sheet-actions{display:flex;gap:8px;margin-bottom:4px}
-    .action-btn{
-      flex:1;
-      padding:13px;
-      border-radius:16px;
-      font-weight:750;
-      font-size:13px;
-      border:none;
-      cursor:pointer;
-      font-family:var(--font);
-      transition:opacity .15s
-    }
+    .action-btn{flex:1;padding:13px;border-radius:16px;font-weight:750;font-size:13px;border:none;cursor:pointer;font-family:var(--font);transition:opacity .15s}
     .action-btn:active{opacity:.8}
     .action-btn-primary{background:var(--primary);color:var(--primary-text)}
     .action-btn-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.10)}
 
-    /* ── FAB ──────────────────────────────────────────────────────────── */
-    #analyze-fab{
-      position:fixed;
-      bottom:calc(var(--sab) + 24px);
-      left:50%;
-      transform:translateX(-50%) translateY(100px);
-      z-index:25;
-      background:var(--primary);
-      color:var(--primary-text);
-      border:none;
-      cursor:pointer;
-      font-family:var(--font);
-      font-size:13.5px;
-      font-weight:800;
-      padding:12px 24px;
-      border-radius:999px;
-      box-shadow:0 8px 24px rgba(0,0,0,.35);
-      transition:transform .3s cubic-bezier(.32,.72,0,1), background .2s ease;
-    }
+    #analyze-fab{position:fixed;bottom:calc(var(--sab) + 24px);left:50%;transform:translateX(-50%) translateY(100px);z-index:25;background:var(--primary);color:var(--primary-text);border:none;cursor:pointer;font-family:var(--font);font-size:13.5px;font-weight:800;padding:12px 24px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.35);transition:transform .3s cubic-bezier(.32,.72,0,1),background .2s ease}
     #analyze-fab.visible{transform:translateX(-50%) translateY(0)}
     #analyze-fab:hover{background:var(--primary-strong)}
 
-    /* ── Toast ────────────────────────────────────────────────────────── */
-    .toast{
-      position:fixed;
-      bottom:calc(var(--sab) + 110px);
-      left:50%;
-      transform:translateX(-50%) translateY(40px);
-      background:rgba(18,20,24,.92);
-      backdrop-filter:blur(16px);
-      color:#fff;
-      font-size:13px;
-      padding:10px 22px;
-      border-radius:999px;
-      z-index:99;
-      opacity:0;
-      transition:all .4s;
-      white-space:nowrap
-    }
+    .toast{position:fixed;bottom:calc(var(--sab) + 110px);left:50%;transform:translateX(-50%) translateY(40px);background:rgba(18,20,24,.92);backdrop-filter:blur(16px);color:#fff;font-size:13px;padding:10px 22px;border-radius:999px;z-index:99;opacity:0;transition:all .4s;white-space:nowrap}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-    /* ── Skeleton loading ─────────────────────────────────────────────── */
     .skeleton-row{display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px 14px}
     .skel{background:rgba(255,255,255,.10);border-radius:8px;animation:pulse 1.4s ease-in-out infinite}
     .skel-thumb{width:54px;height:54px;border-radius:12px;flex-shrink:0}
@@ -253,38 +95,14 @@
     .skel-btn{width:72px;height:36px;border-radius:999px;flex-shrink:0}
     @keyframes pulse{0%,100%{opacity:.4}50%{opacity:.9}}
 
-    /* ── Cookie banner ────────────────────────────────────────────────── */
-    #cookie-banner{
-      position:fixed;bottom:0;left:0;right:0;
-      z-index:100;
-      background:rgba(15,17,20,.96);
-      backdrop-filter:blur(20px);
-      border-top:1px solid rgba(255,255,255,.10);
-      padding:16px 20px calc(var(--sab) + 16px);
-      display:flex;flex-direction:column;gap:10px;
-      transition:transform .4s
-    }
+    #cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(15,17,20,.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.10);padding:16px 20px calc(var(--sab) + 16px);display:flex;flex-direction:column;gap:10px;transition:transform .4s}
     #cookie-banner.hidden{transform:translateY(110%)}
     .cb-text{font-size:12px;color:rgba(255,255,255,.72);line-height:1.5}
     .cb-text a{color:var(--primary);text-decoration:underline}
     .cb-btns{display:flex;gap:8px}
-    .cb-accept{
-      flex:1;
-      background:var(--primary);
-      color:var(--primary-text);
-      border:none;padding:10px;border-radius:12px;
-      font-weight:800;font-size:13px;cursor:pointer;font-family:var(--font)
-    }
-    .cb-decline{
-      flex:1;
-      background:rgba(255,255,255,.08);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.12);
-      padding:10px;border-radius:12px;
-      font-weight:650;font-size:13px;cursor:pointer;font-family:var(--font)
-    }
+    .cb-accept{flex:1;background:var(--primary);color:var(--primary-text);border:none;padding:10px;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer;font-family:var(--font)}
+    .cb-decline{flex:1;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.12);padding:10px;border-radius:12px;font-weight:650;font-size:13px;cursor:pointer;font-family:var(--font)}
 
-    /* ── Outfit cards (History / Collection) ─────────────────────────── */
     .outfit-card{background:var(--panel-2);padding:14px;border-radius:16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.08)}
     .outfit-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
     .outfit-card-title{font-size:15px;font-weight:700}
@@ -293,8 +111,34 @@
     .delete-btn{background:rgba(255,60,60,.18);border:1px solid rgba(255,60,60,.28);color:#ff7b7b;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)}
     .empty-state{text-align:center;color:rgba(255,255,255,.32);padding:40px 20px;font-size:14px;line-height:1.6}
 
-    /* ── Responsive: small screens ────────────────────────────────────── */
-    @media (max-width:560px){
+    /* iOS Install Banner */
+    #ios-install-banner{
+      position:fixed;
+      bottom:calc(var(--sab) + 12px);
+      left:12px;right:12px;
+      z-index:110;
+      background:rgba(20,22,27,.97);
+      backdrop-filter:blur(24px);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:20px;
+      padding:16px 18px;
+      display:flex;align-items:flex-start;gap:14px;
+      box-shadow:0 8px 32px rgba(0,0,0,.6);
+      transform:translateY(calc(100% + 20px));
+      opacity:0;
+      transition:transform .4s cubic-bezier(.32,.72,0,1),opacity .4s;
+    }
+    #ios-install-banner.visible{transform:translateY(0);opacity:1}
+    #ios-install-banner::after{content:'';position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:16px;height:8px;background:rgba(20,22,27,.97);clip-path:polygon(0 0,100% 0,50% 100%)}
+    .iib-icon{width:44px;height:44px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;color:var(--primary-text);font-weight:800}
+    .iib-body{flex:1;min-width:0}
+    .iib-title{font-size:14px;font-weight:800;letter-spacing:-.2px;margin-bottom:4px}
+    .iib-sub{font-size:12px;color:var(--muted);line-height:1.5}
+    .iib-sub svg{vertical-align:middle;margin:0 2px;display:inline}
+    .iib-close{background:none;border:none;color:rgba(255,255,255,.35);font-size:18px;cursor:pointer;padding:0;line-height:1;flex-shrink:0;font-family:var(--font)}
+    .iib-close:hover{color:rgba(255,255,255,.7)}
+
+    @media(max-width:560px){
       #topbar{padding:calc(var(--sat) + 10px) 12px 8px;gap:8px}
       .tb-logo{font-size:16px}
       .tb-btn{font-size:11.5px;padding:8px 12px}
@@ -305,7 +149,6 @@
   <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
   <div id="photo-bg"><img id="bg-img" src="" alt="Anteprima outfit" style="opacity:0"/></div>
 
-  <!-- Topbar: logo + gruppo azioni scorrevole, no troncamenti su mobile -->
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
     <div class="tb-actions">
@@ -323,10 +166,7 @@
       </svg>
     </div>
     <div class="ul-title">Fotografa il tuo outfit</div>
-    <div class="ul-sub">
-      Scatta una foto o scegli dalla galleria.<br>
-      Riconosce ogni capo, scarpa e accessorio e trova dove costa meno.
-    </div>
+    <div class="ul-sub">Scatta una foto o scegli dalla galleria.<br>Riconosce ogni capo, scarpa e accessorio e trova dove costa meno.</div>
   </div>
 
   <button id="analyze-fab" onclick="analyzeImage()">
@@ -349,7 +189,6 @@
 
   <div class="toast" id="toast"></div>
 
-  <!-- Cookie / Privacy Banner -->
   <div id="cookie-banner">
     <div class="cb-text">
       Usiamo analisi anonime (Plausible, senza cookie) per migliorare l'app.
@@ -361,8 +200,25 @@
     </div>
   </div>
 
+  <!-- iOS Add to Home Screen Banner -->
+  <div id="ios-install-banner">
+    <div class="iib-icon">✦</div>
+    <div class="iib-body">
+      <div class="iib-title">Aggiungi alla schermata Home</div>
+      <div class="iib-sub">
+        Tocca
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+          <polyline points="16 6 12 2 8 6"/>
+          <line x1="12" y1="2" x2="12" y2="15"/>
+        </svg>
+        poi <strong style="color:#fff">«Aggiungi a Home»</strong> per usarla come un'app nativa.
+      </div>
+    </div>
+    <button class="iib-close" onclick="dismissInstallBanner()" aria-label="Chiudi">✕</button>
+  </div>
+
   <script>
-    // ── State ────────────────────────────────────────────────────────────────
     let currentFile = null;
     let isAnalyzing = false;
     let history = JSON.parse(localStorage.getItem('lariantHistory') || '[]');
@@ -370,14 +226,14 @@
     let startY = 0;
     let lastItems = [];
 
-    // ── Service Worker registration ──────────────────────────────────────────
+    // Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js').catch(console.error);
       });
     }
 
-    // ── Cookie Banner ────────────────────────────────────────────────────────
+    // Cookie banner
     (function initCookieBanner() {
       if (localStorage.getItem('lariantCookieConsent')) {
         document.getElementById('cookie-banner').classList.add('hidden');
@@ -392,7 +248,22 @@
       document.getElementById('cookie-banner').classList.add('hidden');
     }
 
-    // ── Swipe to close sheet ─────────────────────────────────────────────────
+    // iOS Install Banner
+    (function initInstallBanner() {
+      const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+      const isStandalone = window.navigator.standalone === true;
+      const dismissed = localStorage.getItem('lariantInstallDismissed');
+      if (!isIOS || isStandalone || dismissed) return;
+      setTimeout(() => {
+        document.getElementById('ios-install-banner').classList.add('visible');
+      }, 3500);
+    })();
+    function dismissInstallBanner() {
+      document.getElementById('ios-install-banner').classList.remove('visible');
+      localStorage.setItem('lariantInstallDismissed', '1');
+    }
+
+    // Swipe to close sheet
     function initSwipe() {
       const inner = document.getElementById('sheet-inner');
       const handle = document.getElementById('handle');
@@ -412,12 +283,11 @@
       });
     }
 
-    // ── Upload ───────────────────────────────────────────────────────────────
+    // Upload
     function triggerUpload() {
       if (isAnalyzing) return;
       document.getElementById('file-input').click();
     }
-
     document.getElementById('file-input').addEventListener('change', e => {
       const file = e.target.files[0];
       if (!file) return;
@@ -436,7 +306,7 @@
       reader.readAsDataURL(file);
     });
 
-    // ── Image resize ─────────────────────────────────────────────────────────
+    // Image resize
     async function resizeImage(file) {
       return new Promise(resolve => {
         const img = new Image();
@@ -460,7 +330,7 @@
       });
     }
 
-    // ── Skeleton loading ─────────────────────────────────────────────────────
+    // Skeleton
     function showSkeleton() {
       const list = document.getElementById('item-list');
       list.innerHTML = [1,2,3].map(() => `
@@ -478,13 +348,12 @@
       document.getElementById('sheet').classList.add('visible');
     }
 
-    // ── Analyze ──────────────────────────────────────────────────────────────
+    // Analyze
     async function analyzeImage() {
       if (!currentFile || isAnalyzing) return;
       isAnalyzing = true;
       setFabLoading(true);
       showSkeleton();
-
       try {
         const base64 = await resizeImage(currentFile);
         const res = await fetch('/api/analyze', {
@@ -492,21 +361,13 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ base64, mimeType: 'image/jpeg' })
         });
-
         const data = await res.json();
         if (!res.ok || data.error) throw new Error(data.error || `Errore ${res.status}`);
-
         lastItems = data.items ?? [];
         renderSheet(lastItems);
-
-        history.unshift({
-          date: new Date().toLocaleString('it-IT'),
-          items: lastItems,
-          thumb: null
-        });
+        history.unshift({ date: new Date().toLocaleString('it-IT'), items: lastItems, thumb: null });
         if (history.length > 50) history.pop();
         localStorage.setItem('lariantHistory', JSON.stringify(history));
-
         showToast(`✅ ${lastItems.length} capi riconosciuti`);
       } catch (err) {
         document.getElementById('sheet').classList.remove('visible');
@@ -517,27 +378,22 @@
       }
     }
 
-    // ── Render results ───────────────────────────────────────────────────────
+    // Render results
     function renderSheet(items) {
       const list = document.getElementById('item-list');
       document.getElementById('sheet-title').textContent = 'Outfit rilevato';
       document.getElementById('sheet-sub').textContent = `${items.length} capi identificati`;
-
       list.innerHTML = `
         <div class="sheet-actions">
           <button class="action-btn action-btn-primary" onclick="saveCurrentOutfit()">Salva outfit</button>
           <button class="action-btn action-btn-secondary" onclick="shareOutfit()">Condividi</button>
         </div>`;
-
       items.forEach(item => {
         const genericQuery = encodeURIComponent(`${item.brand || ''} ${item.modello || ''} ${item.colore || ''}`.trim());
         const fallbackUrl = `https://www.google.com/search?tbm=shop&q=${genericQuery}&hl=it&gl=it`;
         const shopUrl = item.best_offer_url || fallbackUrl;
-        const priceLabel = item.best_price
-          ? `da ~€${item.best_price.toFixed(2)}`
-          : `~€${item.prezzo_stimato || '?'}`;
+        const priceLabel = item.best_price ? `da ~€${item.best_price.toFixed(2)}` : `~€${item.prezzo_stimato || '?'}`;
         const sellerLabel = item.best_seller ? ` • ${item.best_seller}` : '';
-
         const row = document.createElement('div');
         row.className = 'item-row';
         row.innerHTML = `
@@ -551,11 +407,10 @@
           <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>`;
         list.appendChild(row);
       });
-
       document.getElementById('sheet').classList.add('visible');
     }
 
-    // ── Save outfit ───────────────────────────────────────────────────────────
+    // Save outfit
     function saveCurrentOutfit() {
       if (!lastItems.length) { showToast('⚠️ Nessun outfit da salvare'); return; }
       const name = prompt('Dai un nome a questo outfit:') || 'Outfit ' + new Date().toLocaleDateString('it-IT');
@@ -564,12 +419,11 @@
       showToast('Outfit salvato!');
     }
 
-    // ── History ───────────────────────────────────────────────────────────────
+    // History
     function showHistory() {
       document.getElementById('sheet-title').textContent = 'Storico scansioni';
       document.getElementById('sheet-sub').textContent = `${history.length} scansioni effettuate`;
       const list = document.getElementById('item-list');
-
       if (history.length === 0) {
         list.innerHTML = '<div class="empty-state">Nessuna scansione ancora.<br>Carica una foto e analizza il tuo outfit!</div>';
       } else {
@@ -581,18 +435,17 @@
                 <div class="outfit-card-date">${h.date}</div>
               </div>
             </div>
-            <div class="outfit-card-items">${(h.items||[]).map(it => `• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
+            <div class="outfit-card-items">${(h.items||[]).map(it=>`• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
           </div>`).join('');
       }
       document.getElementById('sheet').classList.add('visible');
     }
 
-    // ── Collection ────────────────────────────────────────────────────────────
+    // Collection
     function showCollection() {
       document.getElementById('sheet-title').textContent = 'La mia collezione';
       document.getElementById('sheet-sub').textContent = `${collection.length} outfit salvati`;
       const list = document.getElementById('item-list');
-
       if (collection.length === 0) {
         list.innerHTML = '<div class="empty-state">Nessun outfit salvato ancora.<br>Analizza un outfit e premi "Salva"!</div>';
       } else {
@@ -605,7 +458,7 @@
               </div>
               <button class="delete-btn" onclick="deleteOutfit(${outfit.id})">Elimina</button>
             </div>
-            <div class="outfit-card-items">${(outfit.items||[]).map(it => `• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
+            <div class="outfit-card-items">${(outfit.items||[]).map(it=>`• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
           </div>`).join('');
       }
       document.getElementById('sheet').classList.add('visible');
@@ -620,10 +473,10 @@
       showToast('Outfit eliminato');
     }
 
-    // ── Share ─────────────────────────────────────────────────────────────────
+    // Share
     function shareOutfit() {
       const text = 'Il mio outfit analizzato con LariantAI:\n' +
-        lastItems.map(it => `• ${it.emoji||''} ${it.brand} ${it.modello} (${it.colore||''})`).join('\n') +
+        lastItems.map(it=>`• ${it.emoji||''} ${it.brand} ${it.modello} (${it.colore||''})`).join('\n') +
         '\n\nScopri il tuo outfit → https://lariantai.com';
       if (navigator.share) {
         navigator.share({ title: 'Il mio outfit – LariantAI', text });
@@ -633,15 +486,13 @@
       }
     }
 
-    // ── FAB loading ───────────────────────────────────────────────────────────
+    // FAB loading
     function setFabLoading(on) {
-      const fab = document.getElementById('analyze-fab');
-      const txt = document.getElementById('fab-text');
-      fab.style.pointerEvents = on ? 'none' : 'auto';
-      txt.textContent = on ? '⏳ Analisi in corso…' : '✦ Analizza outfit';
+      document.getElementById('analyze-fab').style.pointerEvents = on ? 'none' : 'auto';
+      document.getElementById('fab-text').textContent = on ? '⏳ Analisi in corso…' : '✦ Analizza outfit';
     }
 
-    // ── Toast ─────────────────────────────────────────────────────────────────
+    // Toast
     let toastTimer;
     function showToast(msg) {
       const t = document.getElementById('toast');
