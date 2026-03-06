@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
-  <meta name="theme-color" content="#e91e8c"/>
+  <meta name="theme-color" content="#16181c"/>
   <meta name="description" content="LariantAI – Scatta una foto al tuo outfit e scopri ogni capo, brand e il sito dove costa meno."/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -16,80 +16,308 @@
   <!-- Plausible Analytics – cookieless, GDPR compliant -->
   <script defer data-domain="lariantai.com" src="https://plausible.io/js/script.js"></script>
   <style>
-    :root{--font:'Inter',sans-serif;--accent:#e91e8c;--sand:#d4b89e;--sat:env(safe-area-inset-top,0px);--sab:env(safe-area-inset-bottom,0px)}
+    /* ── Reset & Base ──────────────────────────────────────────────────── */
+    :root{
+      --font:'Inter',sans-serif;
+      --bg:#0f1114;
+      --bg-soft:#15181d;
+      --panel:rgba(20,22,27,.94);
+      --panel-2:rgba(255,255,255,.06);
+      --line:rgba(255,255,255,.10);
+      --text:#f5f5f2;
+      --muted:rgba(255,255,255,.58);
+      --primary:#c9b8a2;
+      --primary-strong:#b8a189;
+      --primary-text:#1c1a18;
+      --success:#a7d98b;
+      --sat:env(safe-area-inset-top,0px);
+      --sab:env(safe-area-inset-bottom,0px)
+    }
+
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    html,body{height:100%;overflow:hidden;font-family:var(--font);background:#000;color:#fff}
+
+    html,body{
+      height:100%;
+      overflow:hidden;
+      font-family:var(--font);
+      background:var(--bg);
+      color:var(--text)
+    }
+
+    /* ── Photo background ──────────────────────────────────────────────── */
     #photo-bg{position:fixed;inset:0;z-index:0;background:#111;overflow:hidden}
     #photo-bg img{width:100%;height:100%;object-fit:cover;object-position:top center;display:block;transition:opacity .5s ease}
-    #photo-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,.2) 55%,rgba(0,0,0,.85) 100%)}
-    #upload-overlay{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:32px;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);cursor:pointer;transition:opacity .3s}
+    #photo-bg::after{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:linear-gradient(to bottom,transparent 28%,rgba(10,10,12,.20) 52%,rgba(10,10,12,.88) 100%)
+    }
+
+    /* ── Upload overlay ───────────────────────────────────────────────── */
+    #upload-overlay{
+      position:fixed;inset:0;z-index:10;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      gap:18px;padding:32px;
+      background:rgba(0,0,0,.55);
+      backdrop-filter:blur(6px);
+      cursor:pointer;
+      transition:opacity .3s
+    }
     #upload-overlay.hidden{opacity:0;pointer-events:none}
-    .ul-ring{width:88px;height:88px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center}
+    .ul-ring{
+      width:88px;height:88px;border-radius:50%;
+      border:2px solid rgba(255,255,255,.25);
+      background:rgba(255,255,255,.06);
+      display:flex;align-items:center;justify-content:center
+    }
     .ul-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
-    .ul-sub{font-size:14px;color:rgba(255,255,255,.55);text-align:center;line-height:1.5}
-    #sheet{position:fixed;left:0;right:0;bottom:0;z-index:20;transform:translateY(100%);transition:transform .4s cubic-bezier(.32,.72,0,1);padding-bottom:var(--sab)}
+    .ul-sub{font-size:14px;color:rgba(255,255,255,.52);text-align:center;line-height:1.5}
+
+    /* ── Topbar ───────────────────────────────────────────────────────── */
+    #topbar{
+      position:fixed;
+      top:0;left:0;right:0;
+      z-index:30;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:calc(var(--sat) + 12px) 14px 10px;
+      overflow-x:auto;
+      scrollbar-width:none;
+      -ms-overflow-style:none;
+    }
+    #topbar::-webkit-scrollbar{display:none}
+
+    .tb-logo{
+      flex:0 0 auto;
+      font-size:17px;
+      font-weight:800;
+      letter-spacing:-.4px;
+      color:#fff;
+      margin-right:2px;
+    }
+
+    .tb-actions{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:max-content;
+    }
+
+    .tb-btn{
+      flex:0 0 auto;
+      background:rgba(255,255,255,.10);
+      backdrop-filter:blur(12px);
+      border:1px solid rgba(255,255,255,.14);
+      color:rgba(255,255,255,.92);
+      font-size:12px;
+      font-weight:650;
+      padding:9px 13px;
+      border-radius:999px;
+      cursor:pointer;
+      white-space:nowrap;
+      font-family:var(--font);
+      transition:background .15s
+    }
+    .tb-btn:hover{background:rgba(255,255,255,.16)}
+    .tb-btn:active{transform:translateY(1px)}
+
+    /* ── Sheet ────────────────────────────────────────────────────────── */
+    #sheet{
+      position:fixed;left:0;right:0;bottom:0;
+      z-index:20;
+      transform:translateY(100%);
+      transition:transform .4s cubic-bezier(.32,.72,0,1);
+      padding-bottom:var(--sab)
+    }
     #sheet.visible{transform:translateY(0)}
-    .sheet-inner{background:rgba(22,22,26,.95);backdrop-filter:blur(60px) saturate(180%);border-top:1px solid rgba(255,255,255,.12);border-radius:28px 28px 0 0;padding:14px 20px 240px;max-height:68dvh;overflow-y:auto;box-shadow:0 -10px 40px rgba(0,0,0,.7)}
-    .handle{width:36px;height:4px;background:rgba(255,255,255,.25);border-radius:99px;margin:0 auto 16px;cursor:grab}
+
+    .sheet-inner{
+      background:var(--panel);
+      backdrop-filter:blur(44px) saturate(160%);
+      border-top:1px solid var(--line);
+      border-radius:28px 28px 0 0;
+      padding:14px 18px 240px;
+      max-height:68dvh;
+      overflow-y:auto;
+      box-shadow:0 -10px 40px rgba(0,0,0,.7)
+    }
+
+    .handle{width:36px;height:4px;background:rgba(255,255,255,.22);border-radius:99px;margin:0 auto 16px;cursor:grab}
     .sheet-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}
     .sheet-title{font-size:20px;font-weight:800;letter-spacing:-.4px}
-    .sheet-sub{font-size:13px;color:rgba(255,255,255,.5);margin-top:3px}
+    .sheet-sub{font-size:13px;color:var(--muted);margin-top:3px}
     .item-list{display:flex;flex-direction:column;gap:12px}
-    .item-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px 14px}
-    .item-thumb{width:54px;height:54px;border-radius:12px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+
+    .item-row{
+      display:flex;align-items:center;gap:12px;
+      background:var(--panel-2);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;
+      padding:12px 14px
+    }
+    .item-thumb{
+      width:54px;height:54px;border-radius:12px;
+      background:rgba(255,255,255,.07);
+      display:flex;align-items:center;justify-content:center;
+      font-size:28px;flex-shrink:0
+    }
     .item-body{flex:1;min-width:0}
-    .item-brand{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:3px}
+    .item-brand{font-size:10px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:rgba(255,255,255,.42);margin-bottom:3px}
     .item-model{font-size:15px;font-weight:700;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .item-tipo{font-size:12px;color:rgba(255,255,255,.45);margin-top:2px}
-    .confidence{font-size:13px;color:#0f0;font-weight:600}
-    .buy-btn{flex-shrink:0;background:var(--sand);color:#222;font-family:var(--font);font-size:13px;font-weight:700;padding:9px 18px;border-radius:999px;box-shadow:0 3px 10px rgba(0,0,0,.3);text-decoration:none;display:inline-block}
-    #topbar{position:fixed;top:0;left:0;right:0;z-index:30;padding:calc(var(--sat) + 14px) 20px 14px;display:flex;align-items:center;gap:8px}
-    .tb-logo{font-size:17px;font-weight:800;letter-spacing:-.4px;color:#fff;margin-right:auto}
-    .tb-btn{background:rgba(255,255,255,.15);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:600;padding:7px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
-    #analyze-fab{position:fixed;bottom:calc(var(--sab) + 24px);left:50%;transform:translateX(-50%) translateY(100px);z-index:25;background:var(--accent);color:#fff;border:none;cursor:pointer;font-family:var(--font);font-size:13.5px;font-weight:700;padding:10px 24px;border-radius:999px;box-shadow:0 6px 20px rgba(0,0,0,.5);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+    .item-tipo{font-size:12px;color:var(--muted);margin-top:2px}
+    .confidence{font-size:13px;color:var(--success);font-weight:700}
+
+    .buy-btn{
+      flex-shrink:0;
+      background:var(--primary);
+      color:var(--primary-text);
+      font-family:var(--font);
+      font-size:13px;
+      font-weight:800;
+      padding:10px 18px;
+      border-radius:999px;
+      box-shadow:none;
+      text-decoration:none;
+      display:inline-block;
+      border:1px solid rgba(0,0,0,.04);
+      transition:background .15s
+    }
+    .buy-btn:hover{background:var(--primary-strong)}
+
+    /* ── Sheet action buttons ─────────────────────────────────────────── */
+    .sheet-actions{display:flex;gap:8px;margin-bottom:4px}
+    .action-btn{
+      flex:1;
+      padding:13px;
+      border-radius:16px;
+      font-weight:750;
+      font-size:13px;
+      border:none;
+      cursor:pointer;
+      font-family:var(--font);
+      transition:opacity .15s
+    }
+    .action-btn:active{opacity:.8}
+    .action-btn-primary{background:var(--primary);color:var(--primary-text)}
+    .action-btn-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.10)}
+
+    /* ── FAB ──────────────────────────────────────────────────────────── */
+    #analyze-fab{
+      position:fixed;
+      bottom:calc(var(--sab) + 24px);
+      left:50%;
+      transform:translateX(-50%) translateY(100px);
+      z-index:25;
+      background:var(--primary);
+      color:var(--primary-text);
+      border:none;
+      cursor:pointer;
+      font-family:var(--font);
+      font-size:13.5px;
+      font-weight:800;
+      padding:12px 24px;
+      border-radius:999px;
+      box-shadow:0 8px 24px rgba(0,0,0,.35);
+      transition:transform .3s cubic-bezier(.32,.72,0,1), background .2s ease;
+    }
     #analyze-fab.visible{transform:translateX(-50%) translateY(0)}
-    .toast{position:fixed;bottom:calc(var(--sab) + 110px);left:50%;transform:translateX(-50%) translateY(40px);background:rgba(20,20,25,.92);backdrop-filter:blur(16px);color:#fff;font-size:13px;padding:10px 22px;border-radius:999px;z-index:99;opacity:0;transition:all .4s;white-space:nowrap}
+    #analyze-fab:hover{background:var(--primary-strong)}
+
+    /* ── Toast ────────────────────────────────────────────────────────── */
+    .toast{
+      position:fixed;
+      bottom:calc(var(--sab) + 110px);
+      left:50%;
+      transform:translateX(-50%) translateY(40px);
+      background:rgba(18,20,24,.92);
+      backdrop-filter:blur(16px);
+      color:#fff;
+      font-size:13px;
+      padding:10px 22px;
+      border-radius:999px;
+      z-index:99;
+      opacity:0;
+      transition:all .4s;
+      white-space:nowrap
+    }
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-    /* Skeleton loading */
-    .skeleton-row{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.09);border-radius:18px;padding:12px 14px}
-    .skel{background:rgba(255,255,255,.12);border-radius:8px;animation:pulse 1.4s ease-in-out infinite}
+
+    /* ── Skeleton loading ─────────────────────────────────────────────── */
+    .skeleton-row{display:flex;align-items:center;gap:12px;background:var(--panel-2);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:12px 14px}
+    .skel{background:rgba(255,255,255,.10);border-radius:8px;animation:pulse 1.4s ease-in-out infinite}
     .skel-thumb{width:54px;height:54px;border-radius:12px;flex-shrink:0}
     .skel-body{flex:1;display:flex;flex-direction:column;gap:6px}
     .skel-line{height:10px}.skel-line.short{width:40%}.skel-line.mid{width:65%}.skel-line.full{width:90%}
     .skel-btn{width:72px;height:36px;border-radius:999px;flex-shrink:0}
-    @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
-    /* Cookie banner */
-    #cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(15,15,20,.96);backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.12);padding:16px 20px calc(var(--sab) + 16px);display:flex;flex-direction:column;gap:10px;transition:transform .4s}
+    @keyframes pulse{0%,100%{opacity:.4}50%{opacity:.9}}
+
+    /* ── Cookie banner ────────────────────────────────────────────────── */
+    #cookie-banner{
+      position:fixed;bottom:0;left:0;right:0;
+      z-index:100;
+      background:rgba(15,17,20,.96);
+      backdrop-filter:blur(20px);
+      border-top:1px solid rgba(255,255,255,.10);
+      padding:16px 20px calc(var(--sab) + 16px);
+      display:flex;flex-direction:column;gap:10px;
+      transition:transform .4s
+    }
     #cookie-banner.hidden{transform:translateY(110%)}
-    .cb-text{font-size:12px;color:rgba(255,255,255,.7);line-height:1.5}
-    .cb-text a{color:var(--sand);text-decoration:underline}
+    .cb-text{font-size:12px;color:rgba(255,255,255,.72);line-height:1.5}
+    .cb-text a{color:var(--primary);text-decoration:underline}
     .cb-btns{display:flex;gap:8px}
-    .cb-accept{flex:1;background:var(--accent);color:#fff;border:none;padding:10px;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;font-family:var(--font)}
-    .cb-decline{flex:1;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:10px;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:var(--font)}
-    /* History/Collection outfit card */
-    .outfit-card{background:rgba(255,255,255,.07);padding:14px;border-radius:16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.09)}
+    .cb-accept{
+      flex:1;
+      background:var(--primary);
+      color:var(--primary-text);
+      border:none;padding:10px;border-radius:12px;
+      font-weight:800;font-size:13px;cursor:pointer;font-family:var(--font)
+    }
+    .cb-decline{
+      flex:1;
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.12);
+      padding:10px;border-radius:12px;
+      font-weight:650;font-size:13px;cursor:pointer;font-family:var(--font)
+    }
+
+    /* ── Outfit cards (History / Collection) ─────────────────────────── */
+    .outfit-card{background:var(--panel-2);padding:14px;border-radius:16px;margin-bottom:10px;border:1px solid rgba(255,255,255,.08)}
     .outfit-card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
     .outfit-card-title{font-size:15px;font-weight:700}
-    .outfit-card-date{font-size:11px;color:rgba(255,255,255,.4)}
-    .outfit-card-items{font-size:12px;color:rgba(255,255,255,.55);line-height:1.6}
-    .delete-btn{background:rgba(255,60,60,.2);border:1px solid rgba(255,60,60,.3);color:#ff6b6b;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)}
-    .empty-state{text-align:center;color:rgba(255,255,255,.35);padding:40px 20px;font-size:14px}
+    .outfit-card-date{font-size:11px;color:var(--muted)}
+    .outfit-card-items{font-size:12px;color:var(--muted);line-height:1.6}
+    .delete-btn{background:rgba(255,60,60,.18);border:1px solid rgba(255,60,60,.28);color:#ff7b7b;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:var(--font)}
+    .empty-state{text-align:center;color:rgba(255,255,255,.32);padding:40px 20px;font-size:14px;line-height:1.6}
+
+    /* ── Responsive: small screens ────────────────────────────────────── */
+    @media (max-width:560px){
+      #topbar{padding:calc(var(--sat) + 10px) 12px 8px;gap:8px}
+      .tb-logo{font-size:16px}
+      .tb-btn{font-size:11.5px;padding:8px 12px}
+    }
   </style>
 </head>
 <body>
   <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none"/>
   <div id="photo-bg"><img id="bg-img" src="" alt="Anteprima outfit" style="opacity:0"/></div>
 
+  <!-- Topbar: logo + gruppo azioni scorrevole, no troncamenti su mobile -->
   <div id="topbar">
     <div class="tb-logo">LariantAI</div>
-    <button class="tb-btn" onclick="showHistory()">📖 Storico</button>
-    <button class="tb-btn" onclick="showCollection()">💾 Collezione</button>
-    <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">✎ Cambia</button>
+    <div class="tb-actions">
+      <button class="tb-btn" onclick="showHistory()">Storico</button>
+      <button class="tb-btn" onclick="showCollection()">Collezione</button>
+      <button class="tb-btn" id="change-btn" onclick="triggerUpload()" style="display:none">Cambia</button>
+    </div>
   </div>
 
   <div id="upload-overlay" onclick="triggerUpload()" role="button" aria-label="Carica una foto del tuo outfit">
     <div class="ul-ring">
-      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="1.5">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.75)" stroke-width="1.5">
         <rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/>
         <polyline points="21 15 16 10 5 21"/>
       </svg>
@@ -110,7 +338,7 @@
       <div class="handle" id="handle"></div>
       <div class="sheet-head">
         <div>
-          <div class="sheet-title" id="sheet-title">Outfit Detected</div>
+          <div class="sheet-title" id="sheet-title">Outfit rilevato</div>
           <div class="sheet-sub" id="sheet-sub">— capi identificati</div>
         </div>
         <div class="sheet-star">✦</div>
@@ -124,7 +352,7 @@
   <!-- Cookie / Privacy Banner -->
   <div id="cookie-banner">
     <div class="cb-text">
-      🍪 Usiamo analisi anonime (Plausible, no cookie) per migliorare l'app.
+      Usiamo analisi anonime (Plausible, senza cookie) per migliorare l'app.
       Nessun dato personale viene venduto. <a href="/privacy.html" target="_blank">Privacy Policy</a>
     </div>
     <div class="cb-btns">
@@ -151,8 +379,9 @@
 
     // ── Cookie Banner ────────────────────────────────────────────────────────
     (function initCookieBanner() {
-      const consent = localStorage.getItem('lariantCookieConsent');
-      if (consent) document.getElementById('cookie-banner').classList.add('hidden');
+      if (localStorage.getItem('lariantCookieConsent')) {
+        document.getElementById('cookie-banner').classList.add('hidden');
+      }
     })();
     function acceptCookies() {
       localStorage.setItem('lariantCookieConsent', 'accepted');
@@ -163,11 +392,11 @@
       document.getElementById('cookie-banner').classList.add('hidden');
     }
 
-    // ── Swipe to close ───────────────────────────────────────────────────────
+    // ── Swipe to close sheet ─────────────────────────────────────────────────
     function initSwipe() {
       const inner = document.getElementById('sheet-inner');
       const handle = document.getElementById('handle');
-      handle.addEventListener('touchstart', e => startY = e.touches[0].clientY);
+      handle.addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
       handle.addEventListener('touchmove', e => {
         const delta = e.touches[0].clientY - startY;
         if (delta > 0) inner.style.transform = `translateY(${delta}px)`;
@@ -245,7 +474,7 @@
           <div class="skel skel-btn"></div>
         </div>`).join('');
       document.getElementById('sheet-title').textContent = 'Analizzando…';
-      document.getElementById('sheet-sub').textContent = 'Gemini sta leggendo il tuo outfit';
+      document.getElementById('sheet-sub').textContent = "L'AI sta analizzando il tuo outfit";
       document.getElementById('sheet').classList.add('visible');
     }
 
@@ -291,24 +520,22 @@
     // ── Render results ───────────────────────────────────────────────────────
     function renderSheet(items) {
       const list = document.getElementById('item-list');
-      document.getElementById('sheet-title').textContent = 'Outfit Detected';
+      document.getElementById('sheet-title').textContent = 'Outfit rilevato';
       document.getElementById('sheet-sub').textContent = `${items.length} capi identificati`;
 
       list.innerHTML = `
-        <div style="display:flex;gap:8px;margin-bottom:4px">
-          <button onclick="saveCurrentOutfit()" style="flex:1;background:#d4b89e;color:#222;padding:13px;border-radius:16px;font-weight:700;font-size:13px;border:none;cursor:pointer;font-family:var(--font)">💾 Salva Outfit</button>
-          <button onclick="shareOutfit()" style="flex:1;background:#3498db;color:#fff;padding:13px;border-radius:16px;font-weight:700;font-size:13px;border:none;cursor:pointer;font-family:var(--font)">📤 Condividi</button>
+        <div class="sheet-actions">
+          <button class="action-btn action-btn-primary" onclick="saveCurrentOutfit()">Salva outfit</button>
+          <button class="action-btn action-btn-secondary" onclick="shareOutfit()">Condividi</button>
         </div>`;
 
       items.forEach(item => {
         const genericQuery = encodeURIComponent(`${item.brand || ''} ${item.modello || ''} ${item.colore || ''}`.trim());
         const fallbackUrl = `https://www.google.com/search?tbm=shop&q=${genericQuery}&hl=it&gl=it`;
-
         const shopUrl = item.best_offer_url || fallbackUrl;
         const priceLabel = item.best_price
           ? `da ~€${item.best_price.toFixed(2)}`
           : `~€${item.prezzo_stimato || '?'}`;
-
         const sellerLabel = item.best_seller ? ` • ${item.best_seller}` : '';
 
         const row = document.createElement('div');
@@ -334,17 +561,17 @@
       const name = prompt('Dai un nome a questo outfit:') || 'Outfit ' + new Date().toLocaleDateString('it-IT');
       collection.unshift({ id: Date.now(), name, date: new Date().toLocaleString('it-IT'), items: lastItems });
       localStorage.setItem('lariantCollection', JSON.stringify(collection));
-      showToast('💾 Outfit salvato!');
+      showToast('Outfit salvato!');
     }
 
     // ── History ───────────────────────────────────────────────────────────────
     function showHistory() {
-      document.getElementById('sheet-title').textContent = '📖 Storico Scan';
+      document.getElementById('sheet-title').textContent = 'Storico scansioni';
       document.getElementById('sheet-sub').textContent = `${history.length} scansioni effettuate`;
       const list = document.getElementById('item-list');
 
       if (history.length === 0) {
-        list.innerHTML = '<div class="empty-state">📷 Nessuna scansione ancora.<br>Carica una foto e analizza il tuo outfit!</div>';
+        list.innerHTML = '<div class="empty-state">Nessuna scansione ancora.<br>Carica una foto e analizza il tuo outfit!</div>';
       } else {
         list.innerHTML = history.map((h, i) => `
           <div class="outfit-card">
@@ -362,12 +589,12 @@
 
     // ── Collection ────────────────────────────────────────────────────────────
     function showCollection() {
-      document.getElementById('sheet-title').textContent = '💾 La Mia Collezione';
+      document.getElementById('sheet-title').textContent = 'La mia collezione';
       document.getElementById('sheet-sub').textContent = `${collection.length} outfit salvati`;
       const list = document.getElementById('item-list');
 
       if (collection.length === 0) {
-        list.innerHTML = '<div class="empty-state">💾 Nessun outfit salvato ancora.<br>Analizza un outfit e premi "Salva"!</div>';
+        list.innerHTML = '<div class="empty-state">Nessun outfit salvato ancora.<br>Analizza un outfit e premi "Salva"!</div>';
       } else {
         list.innerHTML = collection.map(outfit => `
           <div class="outfit-card" id="outfit-${outfit.id}">
@@ -376,7 +603,7 @@
                 <div class="outfit-card-title">${outfit.name}</div>
                 <div class="outfit-card-date">${outfit.date}</div>
               </div>
-              <button class="delete-btn" onclick="deleteOutfit(${outfit.id})">🗑 Elimina</button>
+              <button class="delete-btn" onclick="deleteOutfit(${outfit.id})">Elimina</button>
             </div>
             <div class="outfit-card-items">${(outfit.items||[]).map(it => `• ${it.emoji||''} ${it.brand} ${it.modello}`).join('<br>')}</div>
           </div>`).join('');
@@ -390,19 +617,19 @@
       localStorage.setItem('lariantCollection', JSON.stringify(collection));
       document.getElementById(`outfit-${id}`)?.remove();
       document.getElementById('sheet-sub').textContent = `${collection.length} outfit salvati`;
-      showToast('🗑 Outfit eliminato');
+      showToast('Outfit eliminato');
     }
 
     // ── Share ─────────────────────────────────────────────────────────────────
     function shareOutfit() {
-      const text = '🌟 Il mio outfit analizzato con LariantAI:\n' +
+      const text = 'Il mio outfit analizzato con LariantAI:\n' +
         lastItems.map(it => `• ${it.emoji||''} ${it.brand} ${it.modello} (${it.colore||''})`).join('\n') +
         '\n\nScopri il tuo outfit → https://lariantai.com';
       if (navigator.share) {
         navigator.share({ title: 'Il mio outfit – LariantAI', text });
       } else {
         navigator.clipboard.writeText(text);
-        showToast('📋 Copiato negli appunti!');
+        showToast('Copiato negli appunti!');
       }
     }
 
