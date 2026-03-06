@@ -1,4 +1,4 @@
-const CACHE = 'lariantai-v1';
+const CACHE = 'lariantai-v4';
 const SHELL = [
   '/',
   '/index.html',
