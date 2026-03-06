@@ -3,57 +3,85 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#16181c"/>
   <title>Privacy Policy – LariantAI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
   <style>
-    body{font-family:'Inter',sans-serif;background:#0a0a0f;color:#e5e5ea;max-width:700px;margin:0 auto;padding:40px 24px 80px;line-height:1.7}
-    h1{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
-    h2{font-size:18px;font-weight:700;margin:32px 0 10px;color:#fff}
-    p,li{font-size:15px;color:rgba(255,255,255,.75)}
-    ul{padding-left:20px}
-    a{color:#e91e8c}
-    .meta{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:40px}
-    .back{display:inline-block;margin-bottom:32px;color:#d4b89e;text-decoration:none;font-weight:600;font-size:14px}
-    hr{border:none;border-top:1px solid rgba(255,255,255,.1);margin:32px 0}
+    :root{
+      --font:'Inter',sans-serif;
+      --bg:#0f1114;
+      --text:#f5f5f2;
+      --muted:rgba(255,255,255,.55);
+      --primary:#c9b8a2;
+      --line:rgba(255,255,255,.10);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:var(--font);
+      min-height:100%;
+      line-height:1.7;
+    }
+    body{
+      max-width:680px;
+      margin:0 auto;
+      padding:48px 24px 80px;
+    }
+    header{margin-bottom:40px}
+    .logo{
+      font-size:18px;
+      font-weight:800;
+      letter-spacing:-.4px;
+      color:#fff;
+      text-decoration:none;
+      display:inline-block;
+      margin-bottom:32px;
+    }
+    h1{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+    .date{font-size:13px;color:var(--muted);margin-bottom:40px}
+    h2{font-size:16px;font-weight:700;margin:32px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+    p{font-size:14px;color:var(--muted);margin-bottom:12px}
+    ul{padding-left:20px;margin-bottom:12px}
+    li{font-size:14px;color:var(--muted);margin-bottom:4px}
+    a{color:var(--primary);text-decoration:underline}
+    footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:rgba(255,255,255,.28)}
   </style>
 </head>
 <body>
-  <a class="back" href="/">← Torna all'app</a>
-  <h1>Privacy Policy</h1>
-  <div class="meta">Ultimo aggiornamento: marzo 2026 – Conforme al Regolamento UE 2016/679 (GDPR)</div>
+  <header>
+    <a class="logo" href="/">LariantAI</a>
+    <h1>Privacy Policy</h1>
+    <div class="date">Ultimo aggiornamento: Gennaio 2025</div>
+  </header>
 
-  <h2>1. Titolare del Trattamento</h2>
-  <p>Il titolare del trattamento dei dati personali è LariantAI (di seguito "il Servizio"), raggiungibile via email all'indirizzo <a href="mailto:privacy@lariantai.com">privacy@lariantai.com</a>.</p>
+  <h2>1. Titolare del trattamento</h2>
+  <p>LariantAI è un progetto indipendente. Per qualsiasi richiesta relativa alla privacy: <a href="mailto:privacy@lariantai.com">privacy@lariantai.com</a></p>
 
-  <h2>2. Dati Trattati e Finalità</h2>
+  <h2>2. Dati raccolti</h2>
+  <p>LariantAI raccoglie il minimo indispensabile per funzionare:</p>
   <ul>
-    <li><strong>Immagini dell'outfit:</strong> elaborate in tempo reale tramite Google Gemini AI e non archiviate permanentemente sui nostri server. L'immagine viene cancellata al termine dell'elaborazione.</li>
-    <li><strong>Dati di utilizzo anonimi:</strong> raccogliamo statistiche aggregate (pagine visitate, click, dispositivo) tramite Plausible Analytics, uno strumento cookieless e GDPR-compliant che non traccia individualmente gli utenti.</li>
-    <li><strong>Dati locali (localStorage):</strong> storico e collezione outfit sono salvati <em>esclusivamente</em> sul dispositivo dell'utente. Non vengono mai trasmessi ai nostri server.</li>
+    <li><strong>Immagini caricate:</strong> elaborate in tempo reale tramite Google Gemini API e <em>non</em> salvate sui nostri server.</li>
+    <li><strong>Dati di utilizzo anonimi:</strong> raccolti tramite Plausible Analytics, senza cookie e senza identificativi personali.</li>
+    <li><strong>Dati locali:</strong> storico e collezione sono salvati solo sul tuo dispositivo (localStorage), mai trasmessi.</li>
   </ul>
 
-  <h2>3. Nessun Cookie di Profilazione</h2>
-  <p>LariantAI non utilizza cookie di tracciamento o profilazione pubblicitaria. L'analisi statistica è effettuata con Plausible Analytics, che opera senza cookie e non trasmette dati a terze parti per fini pubblicitari.</p>
+  <h2>3. Cookie e tracciamento</h2>
+  <p>Non utilizziamo cookie di profilazione. Plausible Analytics è cookieless e conforme GDPR per impostazione predefinita. Puoi scegliere "Solo essenziali" nel banner per disabilitare anche le statistiche anonime.</p>
 
-  <h2>4. Terze Parti</h2>
-  <ul>
-    <li><strong>Google Gemini API (Google LLC):</strong> le immagini sono trasmesse in modo sicuro (HTTPS) per l'elaborazione AI. Consulta la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy Policy di Google</a>.</li>
-    <li><strong>Plausible Analytics:</strong> statistiche anonime. Consulta la <a href="https://plausible.io/privacy" target="_blank" rel="noopener">Privacy Policy di Plausible</a>.</li>
-  </ul>
+  <h2>4. Condivisione con terze parti</h2>
+  <p>Le immagini vengono trasmesse a Google (Gemini API) e a SerpAPI per la ricerca del miglior prezzo. Nessun dato personale viene venduto o ceduto a inserzionisti.</p>
 
-  <h2>5. Diritti dell'Utente (GDPR)</h2>
-  <p>Hai diritto di accesso, rettifica, cancellazione ("diritto all'oblio"), limitazione, portabilità e opposizione al trattamento. Poiché i dati personali (outfit, collezioni) sono conservati esclusivamente in locale sul tuo dispositivo, puoi cancellarli in qualsiasi momento svuotando i dati del browser. Per altri diritti contattaci a <a href="mailto:privacy@lariantai.com">privacy@lariantai.com</a>.</p>
+  <h2>5. Diritti dell'utente</h2>
+  <p>Hai il diritto di accedere, rettificare o cancellare i tuoi dati. Poiché non memorizziamo dati personali identificabili, puoi cancellare tutti i dati locali direttamente dal tuo browser (cancella i dati del sito).</p>
 
-  <h2>6. Sicurezza</h2>
-  <p>Tutte le comunicazioni tra il tuo dispositivo e il server avvengono tramite HTTPS con crittografia TLS. Le immagini non vengono memorizzate permanentemente.</p>
+  <h2>6. Modifiche alla policy</h2>
+  <p>Eventuali aggiornamenti saranno comunicati tramite questa pagina con la data di revisione aggiornata.</p>
 
-  <h2>7. Minori</h2>
-  <p>Il Servizio non è rivolto a minori di 16 anni. Non raccogliamo consapevolmente dati relativi a minori.</p>
+  <h2>7. Contatti</h2>
+  <p>Per domande: <a href="mailto:privacy@lariantai.com">privacy@lariantai.com</a></p>
 
-  <h2>8. Modifiche alla Privacy Policy</h2>
-  <p>Eventuali modifiche saranno pubblicate su questa pagina con aggiornamento della data in cima al documento.</p>
-
-  <hr/>
-  <p>Per qualsiasi domanda: <a href="mailto:privacy@lariantai.com">privacy@lariantai.com</a></p>
+  <footer>© 2025 LariantAI — Tutti i diritti riservati</footer>
 </body>
 </html>
