@@ -32,6 +32,7 @@
       --primary-strong:#b8a189;
       --primary-text:#1c1a18;
       --success:#a7d98b;
+      --danger:#ff7b7b;
       --sat:env(safe-area-inset-top,0px);
       --sab:env(safe-area-inset-bottom,0px)
     }
@@ -153,20 +154,120 @@
       transition:transform .12s ease, opacity .12s ease, background .12s ease
     }
 
-    .upload-btn:active{
-      transform:translateY(1px);
-      opacity:.92
+    .upload-btn:active{transform:translateY(1px);opacity:.92}
+    .upload-btn-primary{background:var(--primary);color:var(--primary-text)}
+    .upload-btn-secondary{background:rgba(255,255,255,.08);color:#fff;border-color:rgba(255,255,255,.10)}
+
+    #camera-modal{
+      position:fixed;
+      inset:0;
+      z-index:120;
+      display:none;
+      flex-direction:column;
+      background:#000;
     }
 
-    .upload-btn-primary{
-      background:var(--primary);
-      color:var(--primary-text)
+    #camera-modal.visible{display:flex}
+
+    .camera-topbar{
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      z-index:2;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:calc(var(--sat) + 14px) 16px 14px;
+      background:linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,0));
     }
 
-    .upload-btn-secondary{
-      background:rgba(255,255,255,.08);
+    .camera-title{
+      font-size:15px;
+      font-weight:700;
       color:#fff;
-      border-color:rgba(255,255,255,.10)
+    }
+
+    .camera-close{
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.15);
+      color:#fff;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:700;
+      font-family:var(--font);
+      cursor:pointer;
+    }
+
+    .camera-video-wrap{
+      position:relative;
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      background:#000;
+    }
+
+    #camera-video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#000;
+    }
+
+    .camera-bottom{
+      position:absolute;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:2;
+      padding:18px 18px calc(var(--sab) + 18px);
+      background:linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,0));
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .camera-btn{
+      min-width:120px;
+      min-height:50px;
+      border:none;
+      border-radius:16px;
+      font-family:var(--font);
+      font-size:14px;
+      font-weight:800;
+      cursor:pointer;
+      padding:13px 18px;
+    }
+
+    .camera-btn-primary{
+      background:var(--primary);
+      color:var(--primary-text);
+    }
+
+    .camera-btn-secondary{
+      background:rgba(255,255,255,.10);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .camera-hint{
+      position:absolute;
+      left:50%;
+      top:calc(var(--sat) + 68px);
+      transform:translateX(-50%);
+      z-index:2;
+      background:rgba(0,0,0,.38);
+      color:rgba(255,255,255,.9);
+      border:1px solid rgba(255,255,255,.12);
+      backdrop-filter:blur(10px);
+      border-radius:999px;
+      padding:8px 14px;
+      font-size:12px;
+      white-space:nowrap;
     }
 
     #topbar{
@@ -273,11 +374,7 @@
       margin-top:3px
     }
 
-    .item-list{
-      display:flex;
-      flex-direction:column;
-      gap:12px
-    }
+    .item-list{display:flex;flex-direction:column;gap:12px}
 
     .item-row{
       display:flex;
@@ -301,10 +398,7 @@
       flex-shrink:0
     }
 
-    .item-body{
-      flex:1;
-      min-width:0
-    }
+    .item-body{flex:1;min-width:0}
 
     .item-brand{
       font-size:10px;
@@ -353,11 +447,7 @@
 
     .buy-btn:hover{background:var(--primary-strong)}
 
-    .sheet-actions{
-      display:flex;
-      gap:8px;
-      margin-bottom:4px
-    }
+    .sheet-actions{display:flex;gap:8px;margin-bottom:4px}
 
     .action-btn{
       flex:1;
@@ -372,17 +462,8 @@
     }
 
     .action-btn:active{opacity:.8}
-
-    .action-btn-primary{
-      background:var(--primary);
-      color:var(--primary-text)
-    }
-
-    .action-btn-secondary{
-      background:rgba(255,255,255,.08);
-      color:#fff;
-      border:1px solid rgba(255,255,255,.10)
-    }
+    .action-btn-primary{background:var(--primary);color:var(--primary-text)}
+    .action-btn-secondary{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.10)}
 
     #analyze-fab{
       position:fixed;
@@ -417,16 +498,13 @@
       font-size:13px;
       padding:10px 22px;
       border-radius:999px;
-      z-index:99;
+      z-index:130;
       opacity:0;
       transition:all .4s;
       white-space:nowrap
     }
 
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(0)
-    }
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
     .skeleton-row{
       display:flex;
@@ -444,30 +522,15 @@
       animation:pulse 1.4s ease-in-out infinite
     }
 
-    .skel-thumb{
-      width:54px;
-      height:54px;
-      border-radius:12px;
-      flex-shrink:0
-    }
-
-    .skel-body{
-      flex:1;
-      display:flex;
-      flex-direction:column;
-      gap:6px
-    }
-
+    .skel-thumb{width:54px;height:54px;border-radius:12px;flex-shrink:0}
+    .skel-body{flex:1;display:flex;flex-direction:column;gap:6px}
     .skel-line{height:10px}
     .skel-line.short{width:40%}
     .skel-line.mid{width:65%}
     .skel-line.full{width:90%}
     .skel-btn{width:72px;height:36px;border-radius:999px;flex-shrink:0}
 
-    @keyframes pulse{
-      0%,100%{opacity:.4}
-      50%{opacity:.9}
-    }
+    @keyframes pulse{0%,100%{opacity:.4}50%{opacity:.9}}
 
     #cookie-banner{
       position:fixed;
@@ -493,15 +556,8 @@
       line-height:1.5
     }
 
-    .cb-text a{
-      color:var(--primary);
-      text-decoration:underline
-    }
-
-    .cb-btns{
-      display:flex;
-      gap:8px
-    }
+    .cb-text a{color:var(--primary);text-decoration:underline}
+    .cb-btns{display:flex;gap:8px}
 
     .cb-accept{
       flex:1;
@@ -544,26 +600,14 @@
       margin-bottom:6px
     }
 
-    .outfit-card-title{
-      font-size:15px;
-      font-weight:700
-    }
-
-    .outfit-card-date{
-      font-size:11px;
-      color:var(--muted)
-    }
-
-    .outfit-card-items{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.6
-    }
+    .outfit-card-title{font-size:15px;font-weight:700}
+    .outfit-card-date{font-size:11px;color:var(--muted)}
+    .outfit-card-items{font-size:12px;color:var(--muted);line-height:1.6}
 
     .delete-btn{
       background:rgba(255,60,60,.18);
       border:1px solid rgba(255,60,60,.28);
-      color:#ff7b7b;
+      color:var(--danger);
       border-radius:8px;
       padding:4px 10px;
       font-size:11px;
@@ -631,29 +675,10 @@
       font-weight:800
     }
 
-    .iib-body{
-      flex:1;
-      min-width:0
-    }
-
-    .iib-title{
-      font-size:14px;
-      font-weight:800;
-      letter-spacing:-.2px;
-      margin-bottom:4px
-    }
-
-    .iib-sub{
-      font-size:12px;
-      color:var(--muted);
-      line-height:1.5
-    }
-
-    .iib-sub svg{
-      vertical-align:middle;
-      margin:0 2px;
-      display:inline
-    }
+    .iib-body{flex:1;min-width:0}
+    .iib-title{font-size:14px;font-weight:800;letter-spacing:-.2px;margin-bottom:4px}
+    .iib-sub{font-size:12px;color:var(--muted);line-height:1.5}
+    .iib-sub svg{vertical-align:middle;margin:0 2px;display:inline}
 
     .iib-close{
       background:none;
@@ -674,23 +699,12 @@
       .tb-logo{font-size:16px}
       .tb-btn{font-size:11.5px;padding:8px 12px}
       .upload-actions{width:min(100%, 300px)}
+      .camera-btn{min-width:110px}
     }
   </style>
 </head>
 <body>
-  <input
-    type="file"
-    id="file-input"
-    accept="image/*"
-    capture="environment"
-    class="visually-hidden-input"
-  />
-  <input
-    type="file"
-    id="gallery-input"
-    accept="image/*"
-    class="visually-hidden-input"
-  />
+  <input type="file" id="gallery-input" accept="image/*" class="visually-hidden-input"/>
 
   <div id="photo-bg">
     <img id="bg-img" src="" alt="Anteprima outfit" style="opacity:0"/>
@@ -721,8 +735,26 @@
     </div>
 
     <div class="upload-actions">
-      <label for="file-input" class="upload-btn upload-btn-primary">Scatta foto</label>
+      <button class="upload-btn upload-btn-primary" onclick="openCameraFlow()">Scatta foto</button>
       <label for="gallery-input" class="upload-btn upload-btn-secondary">Scegli dalla libreria</label>
+    </div>
+  </div>
+
+  <div id="camera-modal" aria-hidden="true">
+    <div class="camera-topbar">
+      <div class="camera-title">Fotocamera</div>
+      <button class="camera-close" onclick="closeCameraModal()">Chiudi</button>
+    </div>
+
+    <div class="camera-hint">Inquadra bene il capo e premi Scatta</div>
+
+    <div class="camera-video-wrap">
+      <video id="camera-video" autoplay playsinline muted></video>
+    </div>
+
+    <div class="camera-bottom">
+      <button class="camera-btn camera-btn-secondary" onclick="closeCameraModal()">Annulla</button>
+      <button class="camera-btn camera-btn-primary" onclick="captureFromCamera()">Scatta</button>
     </div>
   </div>
 
@@ -782,6 +814,7 @@
     let collection = JSON.parse(localStorage.getItem('lariantCollection') || '[]');
     let startY = 0;
     let lastItems = [];
+    let cameraStream = null;
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -851,6 +884,74 @@
       return isiOS && standalone;
     }
 
+    async function openCameraFlow() {
+      if (isAnalyzing) return;
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        showToast('Fotocamera web non supportata: usa la libreria foto');
+        return;
+      }
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: false,
+          video: {
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1280 },
+            height: { ideal: 1280 }
+          }
+        });
+
+        cameraStream = stream;
+        const video = document.getElementById('camera-video');
+        video.srcObject = stream;
+        document.getElementById('camera-modal').classList.add('visible');
+      } catch (err) {
+        console.error(err);
+        showToast('Impossibile aprire la fotocamera. Usa la libreria foto.');
+      }
+    }
+
+    function stopCameraStream() {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+      }
+      const video = document.getElementById('camera-video');
+      if (video) video.srcObject = null;
+    }
+
+    function closeCameraModal() {
+      stopCameraStream();
+      document.getElementById('camera-modal').classList.remove('visible');
+    }
+
+    async function captureFromCamera() {
+      const video = document.getElementById('camera-video');
+      if (!video.videoWidth || !video.videoHeight) {
+        showToast('Fotocamera non pronta');
+        return;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(blob => {
+        if (!blob) {
+          showToast('Errore durante lo scatto');
+          return;
+        }
+
+        const file = new File([blob], `lariantai-${Date.now()}.jpg`, { type: 'image/jpeg' });
+        handleSelectedFile(file);
+        closeCameraModal();
+      }, 'image/jpeg', 0.88);
+    }
+
     function triggerUpload() {
       if (isAnalyzing) return;
 
@@ -860,7 +961,7 @@
         return;
       }
 
-      document.getElementById('file-input').click();
+      openCameraFlow();
     }
 
     function handleSelectedFile(file) {
@@ -880,11 +981,6 @@
       };
       reader.readAsDataURL(file);
     }
-
-    document.getElementById('file-input').addEventListener('change', e => {
-      handleSelectedFile(e.target.files[0]);
-      e.target.value = '';
-    });
 
     document.getElementById('gallery-input').addEventListener('change', e => {
       handleSelectedFile(e.target.files[0]);
@@ -1001,10 +1097,7 @@
         const fallbackUrl = `https://www.google.com/search?tbm=shop&q=${genericQuery}&hl=it&gl=it`;
 
         const shopUrl = item.best_offer_url || fallbackUrl;
-        const priceLabel = item.best_price
-          ? `da ~€${item.best_price.toFixed(2)}`
-          : `~€${item.prezzo_stimato || '?'}`;
-
+        const priceLabel = item.best_price ? `da ~€${item.best_price.toFixed(2)}` : `~€${item.prezzo_stimato || '?'}`;
         const sellerLabel = item.best_seller ? ` • ${item.best_seller}` : '';
 
         const row = document.createElement('div');
@@ -1017,8 +1110,7 @@
             <div class="item-tipo">${item.tipo || ''} • ${item.colore || ''}</div>
             <div class="confidence">⚡ ${item.confidence || 85}% • ${priceLabel}${sellerLabel}</div>
           </div>
-          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>
-        `;
+          <a class="buy-btn" href="${shopUrl}" target="_blank" rel="noopener">Compra</a>`;
         list.appendChild(row);
       });
 
@@ -1130,7 +1222,19 @@
       toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
     }
 
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && cameraStream) {
+        stopCameraStream();
+        document.getElementById('camera-modal').classList.remove('visible');
+      }
+    });
+
+    window.addEventListener('pagehide', () => {
+      stopCameraStream();
+    });
+
     window.onload = initSwipe;
   </script>
 </body>
 </html>
+
